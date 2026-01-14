@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anomaly Detection Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            color: #667eea;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            color: #666;
+            font-size: 1.1em;
+        }
+        
+        .status-bar {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .status-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        
+        .status-card h3 {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+        }
+        
+        .status-card .value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .status-card.alert .value {
+            color: #ff6b6b;
+        }
+        
+        .status-card.warning .value {
+            color: #ffc107;
+        }
+        
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .alert-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #ff6b6b;
+            background: #fff5f5;
+        }
+        
+        .alert-item.high {
+            border-left-color: #ff6b6b;
+            background: #ffe5e5;
+        }
+        
+        .alert-item.medium {
+            border-left-color: #ffc107;
+            background: #fff9e6;
+        }
+        
+        .alert-item.low {
+            border-left-color: #28a745;
+            background: #e8f5e9;
+        }
+        
+        .alert-time {
+            font-size: 0.85em;
+            color: #999;
+        }
+        
+        .alert-message {
+            font-weight: 600;
+            color: #333;
+            margin: 5px 0;
+        }
+        
+        .alert-value {
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .anomaly-item {
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+            background: #f0f4ff;
+        }
+        
+        .anomaly-source {
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        .anomaly-value {
+            color: #ff6b6b;
+            font-weight: bold;
+            margin: 5px 0;
+        }
+        
+        .anomaly-score {
+            font-size: 0.85em;
+            color: #999;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-label {
+            font-size: 0.85em;
+            color: #999;
+            margin-bottom: 5px;
+        }
+        
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .refresh-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+        
+        .refresh-btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 10px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .empty {
+            text-align: center;
+            color: #999;
+            padding: 20px;
+        }
+        
+        @media (max-width: 1024px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .update-time {
+            text-align: right;
+            font-size: 0.85em;
+            color: #999;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Anomaly Detection Dashboard</h1>
+            <p>Real-Time Monitoring & Alerts</p>
+        </div>
+        
+        <div class="status-bar" id="statusBar">
+            <div class="status-card">
+                <h3>Server Status</h3>
+                <div class="value" id="serverStatus">🟢 ACTIVE</div>
+            </div>
+            <div class="status-card">
+                <h3>Total Data Points</h3>
+                <div class="value" id="totalPoints">0</div>
+            </div>
+            <div class="status-card alert">
+                <h3>Total Anomalies</h3>
+                <div class="value" id="totalAnomalies">0</div>
+            </div>
+            <div class="status-card warning">
+                <h3>Anomaly Rate</h3>
+                <div class="value" id="anomalyRate">0%</div>
+            </div>
+        </div>
+        
+        <div class="main-grid">
+            <div class="card">
+                <h2>📊 Real-Time Alerts</h2>
+                <button class="refresh-btn" onclick="refreshAlerts()">Refresh Alerts</button>
+                <div id="alertsList" class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading alerts...</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>⚠️ Recent Anomalies</h2>
+                <button class="refresh-btn" onclick="refreshAnomalies()">Refresh Anomalies</button>
+                <div id="anomaliesList" class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading anomalies...</p>
+                </div>
+            </div>
+            
+            <div class="card full-width">
+                <h2>📈 Detailed Statistics</h2>
+                <button class="refresh-btn" onclick="refreshStats()">Refresh Stats</button>
+                <div id="statsContainer" class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading statistics...</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="update-time" id="updateTime"></div>
+    </div>
+    
+    <script>
+        const API_BASE = 'http://localhost:5001';
+        
+        // Auto-refresh every 5 seconds
+        setInterval(() => {
+            refreshAll();
+        }, 5000);
+        
+        // Initial load
+        refreshAll();
+        
+        function updateTime() {
+            const now = new Date();
+            document.getElementById('updateTime').textContent = 
+                `Last updated: ${now.toLocaleTimeString()}`;
+        }
+        
+        async function refreshAll() {
+            await refreshStatus();
+            await refreshAlerts();
+            await refreshAnomalies();
+            await refreshStats();
+            updateTime();
+        }
+        
+        async function refreshStatus() {
+            try {
+                const response = await fetch(`${API_BASE}/api/status`);
+                const data = await response.json();
+                
+                let totalPoints = 0;
+                let totalAnomalies = 0;
+                
+                for (const source in data.detectors) {
+                    totalPoints += data.detectors[source].total_points;
+                    totalAnomalies += data.detectors[source].anomalies;
+                }
+                
+                const rate = totalPoints > 0 ? ((totalAnomalies / totalPoints) * 100).toFixed(2) : 0;
+                
+                document.getElementById('totalPoints').textContent = totalPoints;
+                document.getElementById('totalAnomalies').textContent = totalAnomalies;
+                document.getElementById('anomalyRate').textContent = rate + '%';
+            } catch (e) {
+                document.getElementById('serverStatus').textContent = '🔴 OFFLINE';
+            }
+        }
+        
+        async function refreshAlerts() {
+            try {
+                const response = await fetch(`${API_BASE}/api/alerts?limit=20`);
+                const data = await response.json();
+                
+                const container = document.getElementById('alertsList');
+                
+                if (!data.alerts || data.alerts.length === 0) {
+                    container.innerHTML = '<div class="empty">No alerts yet</div>';
+                    return;
+                }
+                
+                let html = '';
+                data.alerts.forEach(alert => {
+                    const time = new Date(alert.timestamp).toLocaleTimeString();
+                    html += `
+                        <div class="alert-item ${alert.severity.toLowerCase()}">
+                            <div class="alert-time">${time}</div>
+                            <div class="alert-message">${alert.message}</div>
+                            <div class="alert-value">
+                                Source: <strong>${alert.source}</strong> | Value: <strong>${alert.value.toFixed(2)}</strong>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+            } catch (e) {
+                document.getElementById('alertsList').innerHTML = 
+                    '<div class="empty">Unable to load alerts</div>';
+            }
+        }
+        
+        async function refreshAnomalies() {
+            try {
+                const response = await fetch(`${API_BASE}/api/anomalies?limit=20`);
+                const data = await response.json();
+                
+                const container = document.getElementById('anomaliesList');
+                
+                if (!data.anomalies || data.anomalies.length === 0) {
+                    container.innerHTML = '<div class="empty">No anomalies detected yet</div>';
+                    return;
+                }
+                
+                let html = '';
+                data.anomalies.forEach(anomaly => {
+                    const time = new Date(anomaly.timestamp).toLocaleTimeString();
+                    html += `
+                        <div class="anomaly-item">
+                            <div class="anomaly-source">${anomaly.source}</div>
+                            <div class="anomaly-value">Value: ${anomaly.value.toFixed(2)}</div>
+                            <div class="anomaly-score">
+                                Time: ${time} | Score: ${anomaly.score.toFixed(4)}
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                container.innerHTML = html;
+            } catch (e) {
+                document.getElementById('anomaliesList').innerHTML = 
+                    '<div class="empty">Unable to load anomalies</div>';
+            }
+        }
+        
+        async function refreshStats() {
+            try {
+                const response = await fetch(`${API_BASE}/api/stats`);
+                const data = await response.json();
+                
+                let html = '<div class="stats-grid">';
+                
+                // Overall stats
+                html += `
+                    <div class="stat">
+                        <div class="stat-label">Total Data Points</div>
+                        <div class="stat-value">${data.total_data_points}</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Total Anomalies</div>
+                        <div class="stat-value">${data.total_anomalies}</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Overall Rate</div>
+                        <div class="stat-value">${(data.anomaly_rate * 100).toFixed(2)}%</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Sources</div>
+                        <div class="stat-value">${data.sources.length}</div>
+                    </div>
+                `;
+                
+                html += '</div><hr style="margin: 20px 0; border: none; border-top: 1px solid #ddd;">';
+                
+                // Per-source stats
+                html += '<h3 style="margin-bottom: 15px;">By Source:</h3>';
+                html += '<div class="stats-grid">';
+                
+                data.sources.forEach(source => {
+                    html += `
+                        <div class="stat">
+                            <div class="stat-label">${source.name}</div>
+                            <div class="stat-value">${source.anomalies}</div>
+                            <div class="stat-label">(${(source.anomaly_rate * 100).toFixed(2)}%)</div>
+                        </div>
+                    `;
+                });
+                
+                html += '</div>';
+                
+                document.getElementById('statsContainer').innerHTML = html;
+            } catch (e) {
+                document.getElementById('statsContainer').innerHTML = 
+                    '<div class="empty">Unable to load statistics</div>';
+            }
+        }
+    </script>
+</body>
+</html>

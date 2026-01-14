@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anomaly Detection System - Web Interface</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        .section-title {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 3px solid #667eea;
+        }
+        
+        .control-panel {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 0.95em;
+        }
+        
+        input[type="file"],
+        input[type="number"],
+        select {
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            font-size: 1em;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="file"]:focus,
+        input[type="number"]:focus,
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 12px 25px;
+            font-size: 1em;
+            font-weight: 600;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+        }
+        
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #764ba2;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #653a87;
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: #ff6b6b;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #ee5a52;
+        }
+        
+        .results {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        .result-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .result-card h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.2em;
+        }
+        
+        .stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .stat:last-child {
+            border-bottom: none;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .stat-value {
+            color: #667eea;
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+        
+        .anomaly-count {
+            color: #ff6b6b;
+            font-size: 1.3em;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 400px;
+            margin-top: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            color: #667eea;
+            font-weight: 600;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .alert {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+            display: none;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+        
+        .info-box {
+            background: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            color: #0c5aa0;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .content {
+                padding: 20px;
+            }
+            
+            .control-panel {
+                grid-template-columns: 1fr;
+            }
+            
+            .results {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Anomaly Detection System</h1>
+            <p>Real-time Anomaly Detection for Time-Series Data</p>
+        </div>
+        
+        <div class="content">
+            <!-- Data Loading Section -->
+            <div class="section">
+                <h2 class="section-title">📊 Data Loading</h2>
+                
+                <div class="info-box">
+                    <strong>Get Started:</strong> Load sample data or upload your own CSV file with time-series values.
+                </div>
+                
+                <div class="control-panel">
+                    <div class="control-group">
+                        <label for="dataset">Select Sample Dataset</label>
+                        <select id="dataset">
+                            <option value="">-- Choose a dataset --</option>
+                            <option value="cpu_usage">CPU Usage Monitoring</option>
+                            <option value="network_traffic">Network Traffic Analysis</option>
+                            <option value="sensor_data">Temperature Sensors</option>
+                            <option value="financial_data">Financial Data</option>
+                        </select>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="file">Or Upload CSV File</label>
+                        <input type="file" id="file" accept=".csv">
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn-primary" onclick="loadSampleData()">Load Sample Data</button>
+                    <button class="btn-primary" onclick="uploadFile()">Upload File</button>
+                </div>
+                
+                <div id="loadingIndicator" class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading data...</p>
+                </div>
+            </div>
+            
+            <!-- Detection Configuration -->
+            <div class="section" id="configSection" style="display: none;">
+                <h2 class="section-title">⚙️ Detection Configuration</h2>
+                
+                <div class="info-box">
+                    <strong>Configure:</strong> Choose detection methods and set parameters for anomaly detection.
+                </div>
+                
+                <div class="control-panel">
+                    <div class="control-group">
+                        <label for="threshold">Threshold (for Statistical)</label>
+                        <input type="number" id="threshold" value="2.5" step="0.1" min="1" max="5">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label for="trainRatio">Train/Test Ratio</label>
+                        <input type="number" id="trainRatio" value="0.7" step="0.1" min="0.5" max="0.95">
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>Detection Methods</label>
+                        <div style="padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                            <label style="display: flex; align-items: center; margin-bottom: 8px;">
+                                <input type="checkbox" id="method-statistical" checked>
+                                <span style="margin-left: 8px;">Statistical (Z-Score)</span>
+                            </label>
+                            <label style="display: flex; align-items: center;">
+                                <input type="checkbox" id="method-isolation" checked>
+                                <span style="margin-left: 8px;">Isolation Forest</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn-primary" onclick="detectAnomalies()">Detect Anomalies</button>
+                    <button class="btn-secondary" onclick="compareMethod()">Compare Methods</button>
+                </div>
+            </div>
+            
+            <!-- Results Section -->
+            <div class="section" id="resultsSection" style="display: none;">
+                <h2 class="section-title">📈 Detection Results</h2>
+                
+                <div id="alertContainer"></div>
+                
+                <div class="results" id="resultsContainer"></div>
+                
+                <div class="chart-container">
+                    <canvas id="detectionChart"></canvas>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="comparisonChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentData = null;
+        let currentDataset = '';
+        let chart = null;
+        let comparisonChart = null;
+        
+        function showLoading(show = true) {
+            document.getElementById('loadingIndicator').style.display = show ? 'block' : 'none';
+        }
+        
+        function showAlert(message, type = 'success') {
+            const alertContainer = document.getElementById('alertContainer');
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.innerHTML = message;
+            alert.style.display = 'block';
+            alertContainer.innerHTML = '';
+            alertContainer.appendChild(alert);
+            setTimeout(() => alert.style.display = 'none', 5000);
+        }
+        
+        function loadSampleData() {
+            const dataset = document.getElementById('dataset').value;
+            if (!dataset) {
+                showAlert('Please select a dataset', 'error');
+                return;
+            }
+            
+            showLoading(true);
+            
+            fetch('/api/load-sample', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({dataset: dataset})
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    currentData = data.data;
+                    currentDataset = data.dataset;
+                    showAlert(`Loaded ${data.size} data points from ${dataset}`, 'success');
+                    document.getElementById('configSection').style.display = 'block';
+                } else {
+                    showAlert(data.error, 'error');
+                }
+                showLoading(false);
+            })
+            .catch(e => {
+                showAlert('Error loading data: ' + e, 'error');
+                showLoading(false);
+            });
+        }
+        
+        function uploadFile() {
+            const file = document.getElementById('file').files[0];
+            if (!file) {
+                showAlert('Please select a file', 'error');
+                return;
+            }
+            
+            showLoading(true);
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    currentData = data.data;
+                    currentDataset = data.filename;
+                    showAlert(`Uploaded ${data.size} data points from ${data.filename}`, 'success');
+                    document.getElementById('configSection').style.display = 'block';
+                } else {
+                    showAlert(data.error, 'error');
+                }
+                showLoading(false);
+            })
+            .catch(e => {
+                showAlert('Error uploading file: ' + e, 'error');
+                showLoading(false);
+            });
+        }
+        
+        function detectAnomalies() {
+            if (!currentData) {
+                showAlert('Please load data first', 'error');
+                return;
+            }
+            
+            showLoading(true);
+            
+            const methods = [];
+            if (document.getElementById('method-statistical').checked) methods.push('statistical');
+            if (document.getElementById('method-isolation').checked) methods.push('isolation_forest');
+            
+            fetch('/api/detect', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({
+                    data: currentData,
+                    methods: methods,
+                    threshold: parseFloat(document.getElementById('threshold').value),
+                    train_ratio: parseFloat(document.getElementById('trainRatio').value)
+                })
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    displayResults(data);
+                    showAlert('Anomaly detection completed!', 'success');
+                } else {
+                    showAlert(data.error, 'error');
+                }
+                showLoading(false);
+            })
+            .catch(e => {
+                showAlert('Error detecting anomalies: ' + e, 'error');
+                showLoading(false);
+            });
+        }
+        
+        function displayResults(data) {
+            document.getElementById('resultsSection').style.display = 'block';
+            const resultsContainer = document.getElementById('resultsContainer');
+            resultsContainer.innerHTML = '';
+            
+            for (const [method, result] of Object.entries(data.results)) {
+                const card = document.createElement('div');
+                card.className = 'result-card';
+                card.innerHTML = `
+                    <h3>${method === 'statistical' ? 'Statistical (Z-Score)' : 'Isolation Forest'}</h3>
+                    <div class="stat">
+                        <span class="stat-label">Anomalies Detected</span>
+                        <span class="stat-value anomaly-count">${result.anomalies}</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Anomaly Rate</span>
+                        <span class="stat-value">${(result.rate * 100).toFixed(2)}%</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Min Score</span>
+                        <span class="stat-value">${Math.min(...result.scores).toFixed(4)}</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Max Score</span>
+                        <span class="stat-value">${Math.max(...result.scores).toFixed(4)}</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-label">Mean Score</span>
+                        <span class="stat-value">${(result.scores.reduce((a, b) => a + b) / result.scores.length).toFixed(4)}</span>
+                    </div>
+                `;
+                resultsContainer.appendChild(card);
+            }
+            
+            // Draw chart
+            drawDetectionChart(data);
+        }
+        
+        function drawDetectionChart(data) {
+            const ctx = document.getElementById('detectionChart').getContext('2d');
+            
+            const methodResults = data.results;
+            const firstMethod = Object.values(methodResults)[0];
+            const testData = currentData.slice(Math.floor(currentData.length * 0.7));
+            
+            const chartData = {
+                labels: testData.map((_, i) => i),
+                datasets: [
+                    {
+                        label: 'Data Values',
+                        data: testData,
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        borderWidth: 2,
+                        fill: true,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Anomalies',
+                        data: firstMethod.predictions.map((pred, i) => pred === 1 ? testData[i] : null),
+                        borderColor: '#ff6b6b',
+                        backgroundColor: '#ff6b6b',
+                        borderWidth: 0,
+                        pointRadius: 6,
+                        pointStyle: 'star',
+                        yAxisID: 'y'
+                    }
+                ]
+            };
+            
+            if (chart) chart.destroy();
+            chart = new Chart(ctx, {
+                type: 'scatter',
+                data: chartData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Time-Series Data with Detected Anomalies'
+                        },
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            position: 'left',
+                            title: {
+                                display: true,
+                                text: 'Value'
+                            }
+                        },
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Time Index'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        function compareMethod() {
+            if (!currentData) {
+                showAlert('Please load data first', 'error');
+                return;
+            }
+            
+            showLoading(true);
+            
+            fetch('/api/compare', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({data: currentData})
+            })
+            .then(r => r.json())
+            .then(data => {
+                if (data.success) {
+                    drawComparisonChart(data.comparison);
+                    showAlert('Method comparison completed!', 'success');
+                } else {
+                    showAlert(data.error, 'error');
+                }
+                showLoading(false);
+            })
+            .catch(e => {
+                showAlert('Error comparing methods: ' + e, 'error');
+                showLoading(false);
+            });
+        }
+        
+        function drawComparisonChart(comparison) {
+            const ctx = document.getElementById('comparisonChart').getContext('2d');
+            
+            const methods = Object.values(comparison).map(c => c.method);
+            const anomalies = Object.values(comparison).map(c => c.anomalies);
+            const rates = Object.values(comparison).map(c => (c.rate * 100).toFixed(2));
+            
+            const chartData = {
+                labels: methods,
+                datasets: [
+                    {
+                        label: 'Anomalies Detected',
+                        data: anomalies,
+                        backgroundColor: ['#667eea', '#764ba2'],
+                        borderColor: ['#667eea', '#764ba2'],
+                        borderWidth: 2
+                    }
+                ]
+            };
+            
+            if (comparisonChart) comparisonChart.destroy();
+            comparisonChart = new Chart(ctx, {
+                type: 'bar',
+                data: chartData,
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Detection Method Comparison'
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Number of Anomalies'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

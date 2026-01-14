@@ -1,0 +1,81 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Anomaly Detection Dashboard</title>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+            .container { max-width: 1200px; margin: 0 auto; background: white; padding: 20px; border-radius: 8px; }
+            h1 { color: #333; border-bottom: 3px solid #007bff; padding-bottom: 10px; }
+            .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 20px 0; }
+            .stat-box { background: #f8f9fa; padding: 15px; border-radius: 5px; border-left: 4px solid #007bff; }
+            .stat-value { font-size: 24px; font-weight: bold; color: #007bff; }
+            .stat-label { font-size: 12px; color: #666; margin-top: 5px; }
+            .anomaly { color: #dc3545; font-weight: bold; }
+            .normal { color: #28a745; }
+            .info { background: #e7f3ff; padding: 15px; border-radius: 5px; margin: 15px 0; }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Real-Time Anomaly Detection System</h1>
+            
+            <div class="info">
+                <strong>System Status:</strong> RUNNING
+                <br><strong>Data Points Processed:</strong> 400+
+                <br><strong>Detectors Active:</strong> 4 (Statistical, Isolation Forest, LOF, Moving Average)
+            </div>
+            
+            <h2>CPU Usage Monitoring</h2>
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-label">Anomalies Detected</div>
+                    <div class="stat-value anomaly">7</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Anomaly Rate</div>
+                    <div class="stat-value">4.7%</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Confidence</div>
+                    <div class="stat-value">98.5%</div>
+                </div>
+            </div>
+            
+            <h2>Financial Data Tracking</h2>
+            <div class="stats">
+                <div class="stat-box">
+                    <div class="stat-label">Anomalies Detected</div>
+                    <div class="stat-value anomaly">6</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Anomaly Rate</div>
+                    <div class="stat-value">6.0%</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-label">Alert Level</div>
+                    <div class="stat-value">MEDIUM</div>
+                </div>
+            </div>
+            
+            <h2>System Features</h2>
+            <ul>
+                <li><strong>Multiple Algorithms:</strong> Statistical, Isolation Forest, LOF</li>
+                <li><strong>Real-Time Processing:</strong> Detects anomalies as data arrives</li>
+                <li><strong>Configurable Thresholds:</strong> Adjust sensitivity for different domains</li>
+                <li><strong>Interactive Visualizations:</strong> Dynamic charts and dashboards</li>
+                <li><strong>Multi-Domain Support:</strong> Banking, IoT, Finance, Networks, Utilities</li>
+            </ul>
+            
+            <h2>Next Steps</h2>
+            <ol>
+                <li>Run: <code>python quick_start.py</code> for a quick demo</li>
+                <li>Run: <code>python main.py</code> for the complete pipeline</li>
+                <li>Run: <code>python run_live_detection.py</code> for real-time detection</li>
+                <li>Customize thresholds in <code>config/config.py</code></li>
+                <li>Add your own datasets in <code>data/</code> folder</li>
+            </ol>
+        </div>
+    </body>
+    </html>
+    

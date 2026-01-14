@@ -1,0 +1,9 @@
+2026-01-09 10:02:25,026 - scam_detector - INFO - Starting Flask web dashboard...
+2026-01-09 10:02:46,776 - scam_detector - ERROR - Error loading dashboard: no such table: email_scans
+Traceback (most recent call last):
+  File "C:\Users\Sanjay\OneDrive\Desktop\Ai Email Scam Detector\web_app.py", line 13, in dashboard
+    stats = get_statistics()
+  File "C:\Users\Sanjay\OneDrive\Desktop\Ai Email Scam Detector\db_manager.py", line 107, in get_statistics
+    cursor.execute('SELECT COUNT(*) FROM email_scans')
+    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+sqlite3.OperationalError: no such table: email_scans

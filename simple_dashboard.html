@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anomaly Detection - Simple Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .status-box {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .status-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+        
+        .status-value {
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .status-value.anomaly {
+            color: #ff6b6b;
+        }
+        
+        .status-value.offline {
+            color: #ff6b6b;
+        }
+        
+        .cards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .item {
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 5px;
+            border-left: 4px solid #667eea;
+            background: #f0f4ff;
+        }
+        
+        .item.anomaly {
+            border-left-color: #ff6b6b;
+            background: #ffe5e5;
+        }
+        
+        .item-source {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .item-value {
+            color: #ff6b6b;
+            font-weight: bold;
+        }
+        
+        .item-time {
+            font-size: 0.85em;
+            color: #999;
+        }
+        
+        .instruction {
+            background: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        .instruction h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .code {
+            background: #f5f5f5;
+            padding: 10px;
+            border-left: 3px solid #667eea;
+            margin: 10px 0;
+            font-family: monospace;
+            overflow-x: auto;
+        }
+        
+        .empty {
+            text-align: center;
+            color: #999;
+            padding: 20px;
+        }
+        
+        @media (max-width: 800px) {
+            .status-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .cards {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Anomaly Detection Dashboard</h1>
+        
+        <div class="status-grid">
+            <div class="status-box">
+                <div class="status-label">Server Status</div>
+                <div class="status-value" id="serverStatus">OFFLINE</div>
+            </div>
+            <div class="status-box">
+                <div class="status-label">Data Points</div>
+                <div class="status-value" id="dataPoints">0</div>
+            </div>
+            <div class="status-box">
+                <div class="status-label">Anomalies</div>
+                <div class="status-value anomaly" id="anomalyCount">0</div>
+            </div>
+            <div class="status-box">
+                <div class="status-label">Anomaly Rate</div>
+                <div class="status-value" id="anomalyRate">0%</div>
+            </div>
+        </div>
+        
+        <div class="cards">
+            <div class="card">
+                <h2>📊 CPU Anomalies</h2>
+                <div id="cpuAnomalies" class="empty">No anomalies yet</div>
+            </div>
+            
+            <div class="card">
+                <h2>💰 Financial Anomalies</h2>
+                <div id="financialAnomalies" class="empty">No anomalies yet</div>
+            </div>
+            
+            <div class="card">
+                <h2>🌐 Network Anomalies</h2>
+                <div id="networkAnomalies" class="empty">No anomalies yet</div>
+            </div>
+            
+            <div class="card">
+                <h2>🔔 Recent Alerts</h2>
+                <div id="alerts" class="empty">No alerts yet</div>
+            </div>
+        </div>
+        
+        <div class="instruction">
+            <h3>⚙️ How to Use:</h3>
+            <p><strong>1. Keep the server running:</strong></p>
+            <div class="code">cd "c:\Users\Sanjay\OneDrive\Desktop\Anamoly Project"<br>.venv\Scripts\python.exe server.py</div>
+            
+            <p style="margin-top: 15px;"><strong>2. Test the connection:</strong></p>
+            <div class="code">curl -UseBasicParsing http://localhost:5001/api/status</div>
+            
+            <p style="margin-top: 15px;"><strong>3. Refresh this page (Ctrl+R or F5) to see live data</strong></p>
+            
+            <p style="margin-top: 15px;"><strong>4. The dashboard auto-updates every 3 seconds once connected</strong></p>
+        </div>
+    </div>
+    
+    <script>
+        async function updateDashboard() {
+            try {
+                const response = await fetch('http://localhost:5001/api/status');
+                const data = await response.json();
+                
+                // Update server status
+                document.getElementById('serverStatus').textContent = '🟢 ACTIVE';
+                document.getElementById('serverStatus').style.color = '#28a745';
+                
+                // Calculate totals
+                let totalPoints = 0;
+                let totalAnomalies = 0;
+                
+                const detectors = data.detectors || {};
+                
+                for (const source in detectors) {
+                    totalPoints += detectors[source].total_points || 0;
+                    totalAnomalies += detectors[source].anomalies || 0;
+                }
+                
+                const rate = totalPoints > 0 ? ((totalAnomalies / totalPoints) * 100).toFixed(2) : 0;
+                
+                document.getElementById('dataPoints').textContent = totalPoints;
+                document.getElementById('anomalyCount').textContent = totalAnomalies;
+                document.getElementById('anomalyRate').textContent = rate + '%';
+                
+                // Fetch and display anomalies
+                await fetchAndDisplayAnomalies();
+                await fetchAndDisplayAlerts();
+                
+            } catch (e) {
+                console.error('Error:', e);
+                document.getElementById('serverStatus').textContent = 'OFFLINE';
+                document.getElementById('serverStatus').style.color = '#ff6b6b';
+            }
+        }
+        
+        async function fetchAndDisplayAnomalies() {
+            try {
+                const response = await fetch('http://localhost:5001/api/anomalies?limit=100');
+                const data = await response.json();
+                const anomalies = data.anomalies || [];
+                
+                // Group by source
+                const bySource = {
+                    'CPU_Usage': [],
+                    'Financial_Data': [],
+                    'Network_Traffic': []
+                };
+                
+                anomalies.forEach(a => {
+                    const source = a.source || 'Unknown';
+                    if (!bySource[source]) {
+                        bySource[source] = [];
+                    }
+                    bySource[source].push(a);
+                });
+                
+                // Display CPU
+                const cpuDiv = document.getElementById('cpuAnomalies');
+                if (bySource['CPU_Usage'] && bySource['CPU_Usage'].length > 0) {
+                    cpuDiv.innerHTML = bySource['CPU_Usage'].slice(0, 5).map(a => `
+                        <div class="item anomaly">
+                            <div class="item-value">⚠️ ${a.value.toFixed(2)}</div>
+                            <div class="item-time">${new Date(a.timestamp).toLocaleTimeString()}</div>
+                        </div>
+                    `).join('');
+                }
+                
+                // Display Financial
+                const finDiv = document.getElementById('financialAnomalies');
+                if (bySource['Financial_Data'] && bySource['Financial_Data'].length > 0) {
+                    finDiv.innerHTML = bySource['Financial_Data'].slice(0, 5).map(a => `
+                        <div class="item anomaly">
+                            <div class="item-value">⚠️ ${a.value.toFixed(2)}</div>
+                            <div class="item-time">${new Date(a.timestamp).toLocaleTimeString()}</div>
+                        </div>
+                    `).join('');
+                }
+                
+                // Display Network
+                const netDiv = document.getElementById('networkAnomalies');
+                if (bySource['Network_Traffic'] && bySource['Network_Traffic'].length > 0) {
+                    netDiv.innerHTML = bySource['Network_Traffic'].slice(0, 5).map(a => `
+                        <div class="item anomaly">
+                            <div class="item-value">⚠️ ${a.value.toFixed(2)}</div>
+                            <div class="item-time">${new Date(a.timestamp).toLocaleTimeString()}</div>
+                        </div>
+                    `).join('');
+                }
+                
+            } catch (e) {
+                console.error('Error fetching anomalies:', e);
+            }
+        }
+        
+        async function fetchAndDisplayAlerts() {
+            try {
+                const response = await fetch('http://localhost:5001/api/alerts?limit=10');
+                const data = response.json ? await response.json() : { alerts: [] };
+                const alerts = data.alerts || [];
+                
+                const alertsDiv = document.getElementById('alerts');
+                if (alerts.length > 0) {
+                    alertsDiv.innerHTML = alerts.slice(0, 5).map(a => `
+                        <div class="item">
+                            <div class="item-source">${a.source}</div>
+                            <div class="item-value">${a.value.toFixed(2)}</div>
+                            <div class="item-time">${new Date(a.timestamp).toLocaleTimeString()}</div>
+                        </div>
+                    `).join('');
+                }
+            } catch (e) {
+                console.error('Error fetching alerts:', e);
+            }
+        }
+        
+        // Update on page load
+        updateDashboard();
+        
+        // Auto-update every 3 seconds
+        setInterval(updateDashboard, 3000);
+    </script>
+</body>
+</html>
