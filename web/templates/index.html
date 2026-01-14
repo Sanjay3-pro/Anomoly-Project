@@ -12,11 +12,76 @@
             box-sizing: border-box;
         }
         
+        :root {
+            --primary-color: #667eea;
+            --secondary-color: #764ba2;
+            --danger-color: #ff6b6b;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --light-bg: #f5f7fa;
+            --dark-bg: #1a1a2e;
+            --dark-card: #16213e;
+            --text-dark: #333333;
+            --text-light: #ffffff;
+            --border-color: #ddd;
+        }
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             min-height: 100vh;
             padding: 20px;
+            transition: background 0.3s;
+        }
+        
+        body.dark-mode {
+            background: #0f0f1e;
+        }
+        
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 0 20px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1000;
+        }
+        
+        nav.dark-mode {
+            background: var(--dark-bg);
+        }
+        
+        .nav-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.3em;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            padding: 5px 10px;
+        }
+        
+        body {
+            padding-top: 80px;
         }
         
         .container {
@@ -28,8 +93,13 @@
             overflow: hidden;
         }
         
+        .container.dark-mode {
+            background: var(--dark-card);
+            color: var(--text-light);
+        }
+        
         .header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
             color: white;
             padding: 40px;
             text-align: center;
@@ -49,16 +119,24 @@
             padding: 40px;
         }
         
+        .content.dark-mode {
+            background: var(--dark-bg);
+        }
+        
         .section {
             margin-bottom: 40px;
         }
         
         .section-title {
             font-size: 1.5em;
-            color: #333;
+            color: var(--text-dark);
             margin-bottom: 20px;
             padding-bottom: 10px;
-            border-bottom: 3px solid #667eea;
+            border-bottom: 3px solid var(--primary-color);
+        }
+        
+        .dark-mode .section-title {
+            color: var(--text-light);
         }
         
         .control-panel {
@@ -75,26 +153,40 @@
         
         label {
             font-weight: 600;
-            color: #333;
+            color: var(--text-dark);
             margin-bottom: 8px;
             font-size: 0.95em;
+        }
+        
+        .dark-mode label {
+            color: var(--text-light);
         }
         
         input[type="file"],
         input[type="number"],
         select {
             padding: 10px;
-            border: 2px solid #ddd;
+            border: 2px solid var(--border-color);
             border-radius: 5px;
             font-size: 1em;
             transition: border-color 0.3s;
+            background: white;
+            color: var(--text-dark);
+        }
+        
+        .dark-mode input[type="file"],
+        .dark-mode input[type="number"],
+        .dark-mode select {
+            background: var(--dark-card);
+            color: var(--text-light);
+            border-color: #444;
         }
         
         input[type="file"]:focus,
         input[type="number"]:focus,
         select:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: var(--primary-color);
         }
         
         .button-group {
@@ -115,7 +207,7 @@
         }
         
         .btn-primary {
-            background: #667eea;
+            background: var(--primary-color);
             color: white;
         }
         
@@ -126,7 +218,7 @@
         }
         
         .btn-secondary {
-            background: #764ba2;
+            background: var(--secondary-color);
             color: white;
         }
         
@@ -136,7 +228,7 @@
         }
         
         .btn-danger {
-            background: #ff6b6b;
+            background: var(--danger-color);
             color: white;
         }
         
@@ -155,13 +247,22 @@
             background: #f8f9fa;
             padding: 20px;
             border-radius: 10px;
-            border-left: 4px solid #667eea;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .dark-mode .result-card {
+            background: var(--dark-card);
+            color: var(--text-light);
         }
         
         .result-card h3 {
-            color: #333;
+            color: var(--text-dark);
             margin-bottom: 15px;
             font-size: 1.2em;
+        }
+        
+        .dark-mode .result-card h3 {
+            color: var(--text-light);
         }
         
         .stat {
@@ -169,6 +270,10 @@
             justify-content: space-between;
             padding: 10px 0;
             border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .dark-mode .stat {
+            border-bottom-color: #444;
         }
         
         .stat:last-child {
@@ -180,14 +285,18 @@
             font-weight: 500;
         }
         
+        .dark-mode .stat-label {
+            color: #aaa;
+        }
+        
         .stat-value {
-            color: #667eea;
+            color: var(--primary-color);
             font-weight: 600;
             font-size: 1.1em;
         }
         
         .anomaly-count {
-            color: #ff6b6b;
+            color: var(--danger-color);
             font-size: 1.3em;
         }
         
@@ -201,11 +310,15 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
         
+        .dark-mode .chart-container {
+            background: var(--dark-card);
+        }
+        
         .loading {
             display: none;
             text-align: center;
             padding: 20px;
-            color: #667eea;
+            color: var(--primary-color);
             font-weight: 600;
         }
         
@@ -214,7 +327,7 @@
             width: 20px;
             height: 20px;
             border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
+            border-top: 3px solid var(--primary-color);
             border-radius: 50%;
             animation: spin 1s linear infinite;
         }
@@ -229,6 +342,18 @@
             margin: 15px 0;
             border-radius: 5px;
             display: none;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         
         .alert-success {
@@ -254,7 +379,68 @@
             color: #0c5aa0;
         }
         
+        .dark-mode .info-box {
+            background: rgba(33, 150, 243, 0.2);
+            color: #64b5f6;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .stats-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-box {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .dark-mode .stat-box {
+            background: rgba(102, 126, 234, 0.1);
+        }
+        
+        .stat-box-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        .stat-box-label {
+            font-size: 0.9em;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .dark-mode .stat-box-label {
+            color: #aaa;
+        }
+        
         @media (max-width: 768px) {
+            nav {
+                flex-wrap: wrap;
+                height: auto;
+                padding: 10px 20px;
+            }
+            
             .header h1 {
                 font-size: 1.8em;
             }
@@ -270,10 +456,33 @@
             .results {
                 grid-template-columns: 1fr;
             }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+            
+            body {
+                padding-top: 100px;
+            }
         }
     </style>
 </head>
 <body>
+    <nav>
+        <div class="nav-left">
+            📊 Anomaly Detection System
+        </div>
+        <div class="nav-right">
+            <a href="/" style="color: var(--primary-color); text-decoration: none; margin: 0 15px; font-weight: 500;">Home</a>
+            <a href="/dashboard" style="color: var(--primary-color); text-decoration: none; margin: 0 15px; font-weight: 500;">Dashboard</a>
+            <button class="theme-toggle" onclick="toggleDarkMode()" title="Toggle dark mode">🌙</button>
+        </div>
+    </nav>
+    
     <div class="container">
         <div class="header">
             <h1>🚀 Anomaly Detection System</h1>
@@ -362,9 +571,10 @@
             <div class="section" id="resultsSection" style="display: none;">
                 <h2 class="section-title">📈 Detection Results</h2>
                 
-                <div id="alertContainer"></div>
-                
                 <div class="results" id="resultsContainer"></div>
+                
+                <div id="statsContainer" class="stats-summary" style="display: none; margin-top: 20px;">
+                </div>
                 
                 <div class="chart-container">
                     <canvas id="detectionChart"></canvas>
@@ -382,6 +592,33 @@
         let currentDataset = '';
         let chart = null;
         let comparisonChart = null;
+        
+        // Dark mode toggle
+        function toggleDarkMode() {
+            document.documentElement.style.filter = 'invert(1) hue-rotate(180deg)';
+            document.body.classList.toggle('dark-mode');
+            document.querySelector('.container').classList.toggle('dark-mode');
+            document.querySelector('.content').classList.toggle('dark-mode');
+            document.querySelector('nav').classList.toggle('dark-mode');
+            
+            // Toggle all result cards and chart containers
+            document.querySelectorAll('.result-card').forEach(el => el.classList.toggle('dark-mode'));
+            document.querySelectorAll('.chart-container').forEach(el => el.classList.toggle('dark-mode'));
+            document.querySelectorAll('.stat-box').forEach(el => el.classList.toggle('dark-mode'));
+            document.querySelectorAll('label').forEach(el => el.classList.toggle('dark-mode'));
+            document.querySelectorAll('input, select').forEach(el => el.classList.toggle('dark-mode'));
+            
+            // Store preference
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+            
+            // Update theme toggle button
+            document.querySelector('.theme-toggle').textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
+        }
+        
+        // Load dark mode preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            toggleDarkMode();
+        }
         
         function showLoading(show = true) {
             document.getElementById('loadingIndicator').style.display = show ? 'block' : 'none';
@@ -417,8 +654,21 @@
                 if (data.success) {
                     currentData = data.data;
                     currentDataset = data.dataset;
-                    showAlert(`Loaded ${data.size} data points from ${dataset}`, 'success');
+                    showAlert(`✓ Loaded ${data.size} data points from ${dataset}`, 'success');
                     document.getElementById('configSection').style.display = 'block';
+                    
+                    // Update stats
+                    const statsContainer = document.getElementById('statsContainer');
+                    statsContainer.innerHTML = `
+                        <div class="stat-box">
+                            <div class="stat-box-value">${data.size}</div>
+                            <div class="stat-box-label">Data Points</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-box-value">${dataset.replace(/_/g, ' ')}</div>
+                            <div class="stat-box-label">Dataset Type</div>
+                        </div>
+                    `;
                 } else {
                     showAlert(data.error, 'error');
                 }
@@ -450,8 +700,20 @@
                 if (data.success) {
                     currentData = data.data;
                     currentDataset = data.filename;
-                    showAlert(`Uploaded ${data.size} data points from ${data.filename}`, 'success');
+                    showAlert(`✓ Uploaded ${data.size} data points from ${data.filename}`, 'success');
                     document.getElementById('configSection').style.display = 'block';
+                    
+                    const statsContainer = document.getElementById('statsContainer');
+                    statsContainer.innerHTML = `
+                        <div class="stat-box">
+                            <div class="stat-box-value">${data.size}</div>
+                            <div class="stat-box-label">Data Points</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-box-value">${data.columns.length}</div>
+                            <div class="stat-box-label">Columns</div>
+                        </div>
+                    `;
                 } else {
                     showAlert(data.error, 'error');
                 }
@@ -475,6 +737,12 @@
             if (document.getElementById('method-statistical').checked) methods.push('statistical');
             if (document.getElementById('method-isolation').checked) methods.push('isolation_forest');
             
+            if (methods.length === 0) {
+                showAlert('Please select at least one detection method', 'error');
+                showLoading(false);
+                return;
+            }
+            
             fetch('/api/detect', {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
@@ -489,7 +757,7 @@
             .then(data => {
                 if (data.success) {
                     displayResults(data);
-                    showAlert('Anomaly detection completed!', 'success');
+                    showAlert('✓ Anomaly detection completed!', 'success');
                 } else {
                     showAlert(data.error, 'error');
                 }
@@ -506,11 +774,20 @@
             const resultsContainer = document.getElementById('resultsContainer');
             resultsContainer.innerHTML = '';
             
+            let totalAnomalies = 0;
+            
             for (const [method, result] of Object.entries(data.results)) {
+                const methodName = method === 'statistical' ? 'Statistical (Z-Score)' : 'Isolation Forest';
                 const card = document.createElement('div');
                 card.className = 'result-card';
+                totalAnomalies += result.anomalies;
+                
+                const meanScore = (result.scores.reduce((a, b) => a + b) / result.scores.length).toFixed(4);
+                const minScore = Math.min(...result.scores).toFixed(4);
+                const maxScore = Math.max(...result.scores).toFixed(4);
+                
                 card.innerHTML = `
-                    <h3>${method === 'statistical' ? 'Statistical (Z-Score)' : 'Isolation Forest'}</h3>
+                    <h3>${methodName}</h3>
                     <div class="stat">
                         <span class="stat-label">Anomalies Detected</span>
                         <span class="stat-value anomaly-count">${result.anomalies}</span>
@@ -520,20 +797,34 @@
                         <span class="stat-value">${(result.rate * 100).toFixed(2)}%</span>
                     </div>
                     <div class="stat">
-                        <span class="stat-label">Min Score</span>
-                        <span class="stat-value">${Math.min(...result.scores).toFixed(4)}</span>
+                        <span class="stat-label">Mean Anomaly Score</span>
+                        <span class="stat-value">${meanScore}</span>
                     </div>
                     <div class="stat">
-                        <span class="stat-label">Max Score</span>
-                        <span class="stat-value">${Math.max(...result.scores).toFixed(4)}</span>
-                    </div>
-                    <div class="stat">
-                        <span class="stat-label">Mean Score</span>
-                        <span class="stat-value">${(result.scores.reduce((a, b) => a + b) / result.scores.length).toFixed(4)}</span>
+                        <span class="stat-label">Score Range</span>
+                        <span class="stat-value">${minScore} - ${maxScore}</span>
                     </div>
                 `;
                 resultsContainer.appendChild(card);
             }
+            
+            // Show summary stats
+            const statsContainer = document.getElementById('statsContainer');
+            statsContainer.innerHTML = `
+                <div class="stat-box">
+                    <div class="stat-box-value">${data.test_size}</div>
+                    <div class="stat-box-label">Test Data Points</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-box-value">${data.train_size}</div>
+                    <div class="stat-box-label">Training Data Points</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-box-value">${totalAnomalies}</div>
+                    <div class="stat-box-label">Total Anomalies</div>
+                </div>
+            `;
+            statsContainer.style.display = 'grid';
             
             // Draw chart
             drawDetectionChart(data);
@@ -581,11 +872,15 @@
                     plugins: {
                         title: {
                             display: true,
-                            text: 'Time-Series Data with Detected Anomalies'
+                            text: 'Time-Series Data with Detected Anomalies',
+                            color: document.body.classList.contains('dark-mode') ? '#fff' : '#333'
                         },
                         legend: {
                             display: true,
-                            position: 'top'
+                            position: 'top',
+                            labels: {
+                                color: document.body.classList.contains('dark-mode') ? '#fff' : '#333'
+                            }
                         }
                     },
                     scales: {
@@ -594,13 +889,21 @@
                             position: 'left',
                             title: {
                                 display: true,
-                                text: 'Value'
+                                text: 'Value',
+                                color: document.body.classList.contains('dark-mode') ? '#fff' : '#333'
+                            },
+                            ticks: {
+                                color: document.body.classList.contains('dark-mode') ? '#fff' : '#333'
                             }
                         },
                         x: {
                             title: {
                                 display: true,
-                                text: 'Time Index'
+                                text: 'Time Index',
+                                color: document.body.classList.contains('dark-mode') ? '#fff' : '#333'
+                            },
+                            ticks: {
+                                color: document.body.classList.contains('dark-mode') ? '#fff' : '#333'
                             }
                         }
                     }
@@ -625,7 +928,7 @@
             .then(data => {
                 if (data.success) {
                     drawComparisonChart(data.comparison);
-                    showAlert('Method comparison completed!', 'success');
+                    showAlert('✓ Method comparison completed!', 'success');
                 } else {
                     showAlert(data.error, 'error');
                 }
@@ -642,7 +945,6 @@
             
             const methods = Object.values(comparison).map(c => c.method);
             const anomalies = Object.values(comparison).map(c => c.anomalies);
-            const rates = Object.values(comparison).map(c => (c.rate * 100).toFixed(2));
             
             const chartData = {
                 labels: methods,
@@ -652,7 +954,8 @@
                         data: anomalies,
                         backgroundColor: ['#667eea', '#764ba2'],
                         borderColor: ['#667eea', '#764ba2'],
-                        borderWidth: 2
+                        borderWidth: 2,
+                        borderRadius: 5
                     }
                 ]
             };
@@ -667,7 +970,8 @@
                     plugins: {
                         title: {
                             display: true,
-                            text: 'Detection Method Comparison'
+                            text: 'Detection Method Comparison',
+                            color: document.body.classList.contains('dark-mode') ? '#fff' : '#333'
                         }
                     },
                     scales: {
@@ -675,7 +979,16 @@
                             beginAtZero: true,
                             title: {
                                 display: true,
-                                text: 'Number of Anomalies'
+                                text: 'Number of Anomalies',
+                                color: document.body.classList.contains('dark-mode') ? '#fff' : '#333'
+                            },
+                            ticks: {
+                                color: document.body.classList.contains('dark-mode') ? '#fff' : '#333'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: document.body.classList.contains('dark-mode') ? '#fff' : '#333'
                             }
                         }
                     }
