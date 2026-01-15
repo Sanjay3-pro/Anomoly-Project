@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anomaly Detection System - Web Application</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+            margin-top: 10px;
+        }
+
+        .info-box {
+            background: rgba(255, 255, 255, 0.95);
+            border-left: 5px solid #667eea;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-box h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .info-box p {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .chart-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            margin-bottom: 15px;
+        }
+
+        .anomaly-status {
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 500;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .anomaly-status.has-anomalies {
+            background: #fff3cd;
+            color: #856404;
+            border: 2px solid #ffc107;
+        }
+
+        .anomaly-status.no-anomalies {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #28a745;
+        }
+
+        footer {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        footer p {
+            color: #666;
+            margin: 5px 0;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            background: #667eea;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>🔍 Anomaly Detection System</h1>
+            <p class="subtitle">Web-Based Time-Series Anomaly Detection using Synthetic Data</p>
+            <div style="margin-top: 20px;">
+                <span class="badge">Flask Backend</span>
+                <span class="badge">Plotly Visualization</span>
+                <span class="badge">Statistical Detection</span>
+                <span class="badge">Real-Time Analysis</span>
+            </div>
+        </header>
+
+        <!-- Information Box -->
+        <div class="info-box">
+            <h3>📊 System Information</h3>
+            <p>
+                This application automatically generates <strong>synthetic time-series data</strong> simulating real-world scenarios 
+                (server monitoring, network traffic, sensor readings, and financial data). The system uses a 
+                <strong>Statistical Z-Score method</strong> to detect anomalies. Anomalies are highlighted in <strong style="color: #EE5A6F;">red (X markers)</strong> 
+                on the charts, while normal data is shown in <strong style="color: #2E86DE;">blue lines</strong>.
+            </p>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="charts-grid">
+            {% for name, chart_html in charts.items() %}
+            <div class="chart-card">
+                <!-- Plotly Chart -->
+                <div class="chart-container">
+                    {{ chart_html|safe }}
+                </div>
+                
+                <!-- Anomaly Status Text -->
+                {% if '⚠️' in anomaly_texts[name] %}
+                    <div class="anomaly-status has-anomalies">
+                        {{ anomaly_texts[name] }}
+                    </div>
+                {% else %}
+                    <div class="anomaly-status no-anomalies">
+                        {{ anomaly_texts[name] }}
+                    </div>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <p><strong>Anomaly Detection System</strong> | Final Year Project</p>
+            <p>Built with Python Flask, Plotly, and Statistical Machine Learning</p>
+            <p style="margin-top: 10px; font-size: 0.9em; color: #999;">
+                Detection Method: Z-Score (Threshold: 2.5σ) | Train/Test Split: 70/30
+            </p>
+        </footer>
+    </div>
+</body>
+</html>

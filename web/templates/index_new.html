@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Real-Time Anomaly Detection Dashboard</title>
+    <title>Anomaly Detection System</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         * {
@@ -18,22 +18,17 @@
             --danger-color: #ff6b6b;
             --success-color: #28a745;
             --warning-color: #ffc107;
-            --light-bg: #f5f7fa;
-            --dark-bg: #1a1a2e;
-            --dark-card: #16213e;
-            --text-dark: #333333;
-            --text-light: #ffffff;
         }
         
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--light-bg);
+            background: #f5f7fa;
             transition: background 0.3s;
         }
         
         body.dark-mode {
-            background: var(--dark-bg);
-            color: var(--text-light);
+            background: #1a1a2e;
+            color: #fff;
         }
         
         nav {
@@ -47,14 +42,10 @@
         }
         
         nav.dark-mode {
-            background: var(--dark-card);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            background: #16213e;
         }
         
         .nav-left {
-            display: flex;
-            align-items: center;
-            gap: 15px;
             font-size: 1.3em;
             font-weight: bold;
             color: var(--primary-color);
@@ -62,7 +53,7 @@
         
         .nav-right {
             display: flex;
-            gap: 10px;
+            gap: 15px;
         }
         
         .theme-toggle {
@@ -71,20 +62,6 @@
             font-size: 1.3em;
             cursor: pointer;
             padding: 5px 10px;
-        }
-        
-        .status-badge {
-            display: inline-block;
-            padding: 5px 12px;
-            border-radius: 20px;
-            background: var(--success-color);
-            color: white;
-            font-size: 0.85em;
-            font-weight: 600;
-        }
-        
-        .status-badge.offline {
-            background: var(--danger-color);
         }
         
         .dashboard {
@@ -105,8 +82,7 @@
         }
         
         body.dark-mode .card {
-            background: var(--dark-card);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            background: #16213e;
         }
         
         .card:hover {
@@ -115,7 +91,7 @@
         }
         
         .card h2 {
-            color: var(--text-dark);
+            color: #333;
             margin-bottom: 15px;
             font-size: 1.3em;
             border-bottom: 2px solid var(--primary-color);
@@ -123,7 +99,7 @@
         }
         
         body.dark-mode .card h2 {
-            color: var(--text-light);
+            color: #fff;
         }
         
         .metric {
@@ -161,14 +137,6 @@
             color: var(--danger-color);
         }
         
-        .metric-value.warning {
-            color: var(--warning-color);
-        }
-        
-        .metric-value.success {
-            color: var(--success-color);
-        }
-        
         .status-indicator {
             display: inline-block;
             width: 12px;
@@ -176,20 +144,12 @@
             border-radius: 50%;
             margin-right: 8px;
             background: var(--success-color);
-            animation: pulse 2s ease-in-out infinite;
+            animation: pulse 2s infinite;
         }
         
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
-        }
-        
-        .status-indicator.warning {
-            background: var(--warning-color);
-        }
-        
-        .status-indicator.danger {
-            background: var(--danger-color);
         }
         
         .header {
@@ -228,10 +188,6 @@
             background: rgba(102, 126, 234, 0.1);
         }
         
-        .stat-card.warning {
-            border-left-color: var(--warning-color);
-        }
-        
         .stat-card.danger {
             border-left-color: var(--danger-color);
         }
@@ -247,39 +203,40 @@
         .stat-card .value {
             font-size: 2.5em;
             font-weight: 700;
-            color: var(--text-dark);
+            color: #333;
         }
         
         body.dark-mode .stat-card .value {
-            color: var(--text-light);
-        }
-        
-        .chart-card {
-            grid-column: 1 / -1;
+            color: #fff;
         }
         
         .chart-container {
+            grid-column: 1 / -1;
             position: relative;
             height: 300px;
-            margin-top: 20px;
             background: white;
-            padding: 15px;
-            border-radius: 8px;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
         
         body.dark-mode .chart-container {
-            background: var(--dark-card);
+            background: #16213e;
         }
         
         .refresh-btn {
+            grid-column: 1 / -1;
             background: var(--primary-color);
             color: white;
             border: none;
-            padding: 8px 16px;
+            padding: 12px 25px;
             border-radius: 5px;
             cursor: pointer;
             font-weight: 600;
+            font-size: 1em;
             transition: all 0.3s;
+            width: 200px;
+            margin: 10px auto;
         }
         
         .refresh-btn:hover {
@@ -287,37 +244,13 @@
             transform: translateY(-2px);
         }
         
-        .refresh-btn.auto {
-            animation: pulse 1s infinite;
-        }
-        
-        .timestamp {
-            font-size: 0.9em;
-            color: #999;
-            margin-top: 10px;
-        }
-        
-        body.dark-mode .timestamp {
-            color: #666;
-        }
-        
         @media (max-width: 768px) {
             .dashboard {
                 grid-template-columns: 1fr;
-                padding: 10px;
             }
             
             .header h1 {
                 font-size: 1.5em;
-            }
-            
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            nav {
-                flex-direction: column;
-                gap: 10px;
             }
         }
     </style>
@@ -325,12 +258,9 @@
 <body>
     <nav>
         <div class="nav-left">
-            📊 Real-Time Dashboard
+            📊 Anomaly Detection System
         </div>
         <div class="nav-right">
-            <span class="status-badge" id="statusBadge">● LIVE</span>
-            <a href="/" style="color: var(--primary-color); text-decoration: none; margin: 0 15px; font-weight: 500;">Home</a>
-            <button class="refresh-btn" onclick="refreshDashboard()">🔄 Refresh</button>
             <button class="theme-toggle" onclick="toggleDarkMode()" title="Toggle dark mode">🌙</button>
         </div>
     </nav>
@@ -345,9 +275,8 @@
             <div class="stat-card">
                 <h3>System Status</h3>
                 <div class="value">
-                    <span class="status-indicator" id="statusIndicator"></span><span id="statusText">ACTIVE</span>
+                    <span class="status-indicator"></span><span id="statusText">ACTIVE</span>
                 </div>
-                <div class="timestamp" id="lastUpdate"></div>
             </div>
             
             <div class="stat-card">
@@ -355,7 +284,7 @@
                 <div class="value" id="totalAnomalies">--</div>
             </div>
             
-            <div class="stat-card warning">
+            <div class="stat-card">
                 <h3>Detection Rate</h3>
                 <div class="value" id="detectionRate">--</div>
             </div>
@@ -366,7 +295,7 @@
             </div>
         </div>
         
-        <!-- CPU Monitoring Card -->
+        <!-- CPU Monitoring -->
         <div class="card">
             <h2>💻 CPU Usage Monitoring</h2>
             <div class="metric">
@@ -378,16 +307,12 @@
                 <span class="metric-value alert" id="cpuAnomalies">--</span>
             </div>
             <div class="metric">
-                <span class="metric-label">Normal Data Points</span>
-                <span class="metric-value" id="cpuNormal">--</span>
-            </div>
-            <div class="metric">
                 <span class="metric-label">Alert Threshold</span>
                 <span class="metric-value">85%</span>
             </div>
         </div>
         
-        <!-- Network Monitoring Card -->
+        <!-- Network Monitoring -->
         <div class="card">
             <h2>🌐 Network Traffic Analysis</h2>
             <div class="metric">
@@ -399,16 +324,12 @@
                 <span class="metric-value alert" id="networkAnomalies">--</span>
             </div>
             <div class="metric">
-                <span class="metric-label">Peak Traffic</span>
-                <span class="metric-value" id="networkPeak">--</span>
-            </div>
-            <div class="metric">
                 <span class="metric-label">Average Rate</span>
                 <span class="metric-value" id="networkAvg">--</span>
             </div>
         </div>
         
-        <!-- Sensor Data Card -->
+        <!-- Sensor Data -->
         <div class="card">
             <h2>🌡️ Sensor Data (Temperature)</h2>
             <div class="metric">
@@ -423,13 +344,9 @@
                 <span class="metric-label">Safe Range</span>
                 <span class="metric-value">15-30°C</span>
             </div>
-            <div class="metric">
-                <span class="metric-label">Status</span>
-                <span class="metric-value"><span class="status-indicator" id="sensorStatus"></span><span id="sensorStatusText">Normal</span></span>
-            </div>
         </div>
         
-        <!-- Financial Data Card -->
+        <!-- Financial Data -->
         <div class="card">
             <h2>📈 Financial Data (Stock Prices)</h2>
             <div class="metric">
@@ -444,13 +361,9 @@
                 <span class="metric-label">Change (24h)</span>
                 <span class="metric-value" id="stockChange">--</span>
             </div>
-            <div class="metric">
-                <span class="metric-label">Volatility</span>
-                <span class="metric-value warning" id="stockVolatility">--</span>
-            </div>
         </div>
         
-        <!-- Detection Methods Card -->
+        <!-- Detection Methods -->
         <div class="card">
             <h2>⚙️ Active Detection Methods</h2>
             <div class="metric">
@@ -463,15 +376,11 @@
             </div>
             <div class="metric">
                 <span class="metric-label">Local Outlier Factor</span>
-                <span class="status-indicator warning"></span>READY
-            </div>
-            <div class="metric">
-                <span class="metric-label">Ensemble Voting</span>
-                <span class="status-indicator"></span>ACTIVE
+                <span class="status-indicator"></span>READY
             </div>
         </div>
         
-        <!-- Performance Metrics Card -->
+        <!-- Performance -->
         <div class="card">
             <h2>⚡ System Performance</h2>
             <div class="metric">
@@ -480,58 +389,38 @@
             </div>
             <div class="metric">
                 <span class="metric-label">Detection Accuracy</span>
-                <span class="metric-value success" id="accuracy">--</span>
-            </div>
-            <div class="metric">
-                <span class="metric-label">Data Points/Second</span>
-                <span class="metric-value" id="dataPointsPerSec">--</span>
+                <span class="metric-value" id="accuracy">--</span>
             </div>
             <div class="metric">
                 <span class="metric-label">Uptime</span>
-                <span class="metric-value success" id="uptime">--</span>
+                <span class="metric-value" id="uptime">--</span>
             </div>
         </div>
         
-        <!-- Recent Alerts Card -->
-        <div class="card">
-            <h2>🚨 Recent Alerts</h2>
-            <div id="alertsList">
-                <div class="metric">
-                    <span class="metric-label">⚠️ Initializing...</span>
-                    <span class="metric-value">now</span>
-                </div>
-            </div>
+        <!-- Trends Chart -->
+        <div class="chart-container">
+            <h2 style="margin-bottom: 10px; color: #333;">📊 Anomaly Trends (24h)</h2>
+            <canvas id="trendsChart"></canvas>
         </div>
         
-        <!-- System Health Chart -->
-        <div class="card chart-card">
-            <h2>📊 Anomaly Detection Trends</h2>
-            <div class="chart-container">
-                <canvas id="trendsChart"></canvas>
-            </div>
-        </div>
+        <button class="refresh-btn" onclick="refreshDashboard()">🔄 Refresh Dashboard</button>
     </div>
     
     <script>
         let trendsChart = null;
-        let lastUpdate = new Date();
         let totalAnomaliesCount = 0;
         
-        // Dark mode toggle
         function toggleDarkMode() {
             document.body.classList.toggle('dark-mode');
             document.querySelector('nav').classList.toggle('dark-mode');
-            document.querySelectorAll('.card').forEach(el => el.classList.toggle('dark-mode'));
             document.querySelector('.theme-toggle').textContent = document.body.classList.contains('dark-mode') ? '☀️' : '🌙';
             localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
         }
         
-        // Load dark mode preference
         if (localStorage.getItem('darkMode') === 'true') {
             toggleDarkMode();
         }
         
-        // Generate realistic random data
         function getRandomData(min, max) {
             return Math.floor(Math.random() * (max - min + 1)) + min;
         }
@@ -540,54 +429,38 @@
             return (Math.random() * (max - min) + min).toFixed(2);
         }
         
-        // Update dashboard with simulated data
         function updateDashboard() {
-            lastUpdate = new Date();
-            document.getElementById('lastUpdate').textContent = `Updated: ${lastUpdate.toLocaleTimeString()}`;
-            
-            // CPU Data
             const cpuVal = getRandomData(20, 95);
             document.getElementById('cpuLoad').textContent = cpuVal + '%';
             document.getElementById('cpuAnomalies').textContent = getRandomData(5, 15);
-            document.getElementById('cpuNormal').textContent = getRandomData(400, 495);
             
-            // Network Data
             const netBand = getRandomData(150, 350);
             document.getElementById('networkBandwidth').textContent = netBand + ' Mbps';
             document.getElementById('networkAnomalies').textContent = getRandomData(4, 12);
-            document.getElementById('networkPeak').textContent = getRandomData(700, 950) + ' Mbps';
             document.getElementById('networkAvg').textContent = getRandomData(200, 300) + ' Mbps';
             
-            // Sensor Data
-            const tempVal = (getRandomFloat(18, 28));
+            const tempVal = getRandomFloat(18, 28);
             document.getElementById('sensorTemp').textContent = tempVal + '°C';
             document.getElementById('sensorAnomalies').textContent = getRandomData(2, 8);
             
-            // Financial Data
             const priceVal = getRandomFloat(150, 165);
             document.getElementById('stockPrice').textContent = '$' + priceVal;
             const priceChange = getRandomFloat(-5, 5);
             document.getElementById('stockChange').textContent = (priceChange > 0 ? '+' : '') + priceChange + '%';
             document.getElementById('stockAnomalies').textContent = getRandomData(10, 20);
-            document.getElementById('stockVolatility').textContent = (Math.random() > 0.5 ? 'High' : 'Medium');
             
-            // System Performance
             document.getElementById('procSpeed').textContent = getRandomFloat(0.8, 1.5) + 's';
             document.getElementById('accuracy').textContent = getRandomData(92, 99) + '%';
-            document.getElementById('dataPointsPerSec').textContent = getRandomData(7000, 9500);
             document.getElementById('uptime').textContent = '99.9' + getRandomData(0, 9) + '%';
             
-            // Update stats
             totalAnomaliesCount += getRandomData(5, 15);
             document.getElementById('totalAnomalies').textContent = totalAnomaliesCount;
             document.getElementById('detectionRate').textContent = getRandomFloat(5, 12) + '%';
             document.getElementById('criticalAlerts').textContent = getRandomData(0, 3);
             
-            // Update trends chart
             updateTrendsChart();
         }
         
-        // Update trends chart
         function updateTrendsChart() {
             const ctx = document.getElementById('trendsChart').getContext('2d');
             
@@ -643,15 +516,22 @@
                         plugins: {
                             legend: {
                                 display: true,
-                                position: 'top'
+                                position: 'top',
+                                labels: {
+                                    color: document.body.classList.contains('dark-mode') ? '#fff' : '#333'
+                                }
                             }
                         },
                         scales: {
                             y: {
                                 beginAtZero: true,
-                                title: {
-                                    display: true,
-                                    text: 'Anomalies Detected'
+                                ticks: {
+                                    color: document.body.classList.contains('dark-mode') ? '#fff' : '#333'
+                                }
+                            },
+                            x: {
+                                ticks: {
+                                    color: document.body.classList.contains('dark-mode') ? '#fff' : '#333'
                                 }
                             }
                         }
@@ -671,168 +551,8 @@
             }, 500);
         }
         
-        // Initialize dashboard
         updateDashboard();
-        
-        // Auto-refresh every 30 seconds
         setInterval(updateDashboard, 30000);
-    </script>
-</body>
-</html>
-        
-        <!-- CPU Monitoring Card -->
-        <div class="card">
-            <h2>CPU Usage Monitoring</h2>
-            <div class="metric">
-                <span class="metric-label">Current Load</span>
-                <span class="metric-value">67.3%</span>
-            </div>
-            <div class="metric">
-                <span class="metric-label">Anomalies Detected</span>
-                <span class="metric-value alert">12</span>
-            </div>
-            <div class="metric">
-                <span class="metric-label">Normal Data Points</span>
-                <span class="metric-value">488</span>
-            </div>
-            <div class="metric">
-                <span class="metric-label">Alert Threshold</span>
-                <span class="metric-value">85%</span>
-            </div>
-        </div>
-        
-        <!-- Network Monitoring Card -->
-        <div class="card">
-            <h2>Network Traffic Analysis</h2>
-            <div class="metric">
-                <span class="metric-label">Current Bandwidth</span>
-                <span class="metric-value">234 Mbps</span>
-            </div>
-            <div class="metric">
-                <span class="metric-label">Anomalies Detected</span>
-                <span class="metric-value alert">8</span>
-            </div>
-            <div class="metric">
-                <span class="metric-label">Peak Traffic</span>
-                <span class="metric-value">892 Mbps</span>
-            </div>
-            <div class="metric">
-                <span class="metric-label">Average Rate</span>
-                <span class="metric-value">245 Mbps</span>
-            </div>
-        </div>
-        
-        <!-- Sensor Data Card -->
-        <div class="card">
-            <h2>Sensor Data (Temperature)</h2>
-            <div class="metric">
-                <span class="metric-label">Current Temp</span>
-                <span class="metric-value">23.5°C</span>
-            </div>
-            <div class="metric">
-                <span class="metric-label">Anomalies Detected</span>
-                <span class="metric-value">5</span>
-            </div>
-            <div class="metric">
-                <span class="metric-label">Safe Range</span>
-                <span class="metric-value">15-30°C</span>
-            </div>
-            <div class="metric">
-                <span class="metric-label">Status</span>
-                <span class="metric-value"><span class="status-indicator"></span>Normal</span>
-            </div>
-        </div>
-        
-        <!-- Financial Data Card -->
-        <div class="card">
-            <h2>Financial Data (Stock Prices)</h2>
-            <div class="metric">
-                <span class="metric-label">Current Price</span>
-                <span class="metric-value">$156.78</span>
-            </div>
-            <div class="metric">
-                <span class="metric-label">Anomalies Detected</span>
-                <span class="metric-value alert">17</span>
-            </div>
-            <div class="metric">
-                <span class="metric-label">Change (24h)</span>
-                <span class="metric-value">+2.34%</span>
-            </div>
-            <div class="metric">
-                <span class="metric-label">Volatility</span>
-                <span class="metric-value">High</span>
-            </div>
-        </div>
-        
-        <!-- Detection Methods Card -->
-        <div class="card">
-            <h2>Active Detection Methods</h2>
-            <div class="metric">
-                <span class="metric-label">Statistical (Z-Score)</span>
-                <span class="status-indicator"></span>
-            </div>
-            <div class="metric">
-                <span class="metric-label">Isolation Forest</span>
-                <span class="status-indicator"></span>
-            </div>
-            <div class="metric">
-                <span class="metric-label">Local Outlier Factor</span>
-                <span class="status-indicator"></span>
-            </div>
-            <div class="metric">
-                <span class="metric-label">Ensemble Voting</span>
-                <span class="status-indicator"></span>
-            </div>
-        </div>
-        
-        <!-- Performance Metrics Card -->
-        <div class="card">
-            <h2>System Performance</h2>
-            <div class="metric">
-                <span class="metric-label">Processing Speed</span>
-                <span class="metric-value">1.2s</span>
-            </div>
-            <div class="metric">
-                <span class="metric-label">Detection Accuracy</span>
-                <span class="metric-value">94.8%</span>
-            </div>
-            <div class="metric">
-                <span class="metric-label">Data Points/Second</span>
-                <span class="metric-value">8,500</span>
-            </div>
-            <div class="metric">
-                <span class="metric-label">Uptime</span>
-                <span class="metric-value">99.95%</span>
-            </div>
-        </div>
-        
-        <!-- Alerts Card -->
-        <div class="card">
-            <h2>Recent Alerts</h2>
-            <div class="metric">
-                <span class="metric-label">⚠️ Unusual CPU spike</span>
-                <span class="metric-value">2 min ago</span>
-            </div>
-            <div class="metric">
-                <span class="metric-label">⚠️ Network anomaly detected</span>
-                <span class="metric-value">15 min ago</span>
-            </div>
-            <div class="metric">
-                <span class="metric-label">⚠️ High volatility in stock</span>
-                <span class="metric-value">28 min ago</span>
-            </div>
-            <div class="metric">
-                <span class="metric-label">✓ Temperature normalized</span>
-                <span class="metric-value">45 min ago</span>
-            </div>
-        </div>
-    </div>
-    
-    <script>
-        // Auto-refresh dashboard every 30 seconds
-        setInterval(() => {
-            console.log('Dashboard updated at', new Date().toLocaleTimeString());
-        }, 30000);
     </script>
 </body>
 </html>

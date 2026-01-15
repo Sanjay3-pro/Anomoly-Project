@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Anomaly Detection Dashboard</title>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #333;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+            margin-top: 10px;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            background: #28a745;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes glow {
+            0%, 100% {
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            }
+            50% {
+                box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
+            }
+        }
+
+        .info-box {
+            background: rgba(255, 255, 255, 0.95);
+            border-left: 5px solid #667eea;
+            padding: 15px 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-box h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.2em;
+        }
+
+        .info-box p {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .chart-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            animation: slideIn 0.6s ease-out, glow 3s ease-in-out infinite;
+        }
+
+        .chart-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .chart-title {
+            font-size: 1.3em;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            margin-bottom: 15px;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1em;
+            transition: all 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+
+        .anomaly-status {
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 500;
+            text-align: center;
+            margin-top: 15px;
+            transition: all 0.6s cubic-bezier(0.4, 0.0, 0.2, 1);
+        }
+
+        .anomaly-status.has-anomalies {
+            background: #fff3cd;
+            color: #856404;
+            border: 2px solid #ffc107;
+        }
+
+        .anomaly-status.no-anomalies {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #28a745;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid #eee;
+            font-size: 0.9em;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-label {
+            color: #999;
+            font-size: 0.85em;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.1em;
+        }
+
+        footer {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin-top: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        footer p {
+            color: #666;
+            margin: 5px 0;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 5px 12px;
+            background: #667eea;
+            color: white;
+            border-radius: 20px;
+            font-size: 0.85em;
+            margin: 5px;
+        }
+
+        .refresh-btn {
+            display: inline-block;
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            margin-top: 15px;
+            transition: background 0.3s;
+        }
+
+        .refresh-btn:hover {
+            background: #5568d3;
+        }
+
+        @media (max-width: 768px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+        }
+
+        .loading {
+            text-align: center;
+            color: #667eea;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1><span class="status-indicator"></span>Live Anomaly Detection Dashboard</h1>
+            <p class="subtitle">Real-Time Time-Series Analysis with Synthetic Data Streaming</p>
+            <div style="margin-top: 20px;">
+                <span class="badge">🔴 Live Updates</span>
+                <span class="badge">Flask Backend</span>
+                <span class="badge">Plotly Charts</span>
+                <span class="badge">Streaming Data</span>
+            </div>
+            <button class="refresh-btn" onclick="refreshAllCharts()">🔄 Refresh Data</button>
+        </header>
+
+        <!-- Information Box -->
+        <div class="info-box">
+            <h3>📊 Live Dashboard Information</h3>
+            <p>
+                This dashboard displays <strong>live streaming time-series data</strong> with <strong>real-time anomaly detection</strong>.
+                The charts update automatically and show anomalies highlighted in <strong style="color: #EE5A6F;">red (X markers)</strong>.
+                Hover over the charts to see detailed values. All data is synthetically generated to simulate real-world scenarios.
+            </p>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="charts-grid" id="chartsContainer">
+            <!-- Charts will be loaded here dynamically -->
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <p><strong>Live Anomaly Detection System</strong> | Final Year Project</p>
+            <p>Built with Python Flask, Plotly, and Real-Time Data Streaming</p>
+            <p style="margin-top: 10px; font-size: 0.9em; color: #999;">
+                Detection Method: Z-Score (Threshold: 2.5σ) | Data Updates in Real-Time
+            </p>
+        </footer>
+    </div>
+
+    <script>
+        // Chart configurations
+        const chartConfigs = {
+            'CPU Usage (Server Monitoring)': {
+                title: '🖥️ CPU Usage (Server Monitoring)',
+                yaxis: 'CPU %',
+                color: '#2E86DE'
+            },
+            'Network Traffic (Packets/sec)': {
+                title: '📡 Network Traffic (Packets/sec)',
+                yaxis: 'Packets/sec',
+                color: '#06D6A0'
+            },
+            'Temperature Sensor (°C)': {
+                title: '🌡️ Temperature Sensor (°C)',
+                yaxis: 'Temperature (°C)',
+                color: '#F77F00'
+            },
+            'Stock Price ($)': {
+                title: '💰 Stock Price ($)',
+                yaxis: 'Price ($)',
+                color: '#D62828'
+            }
+        };
+
+        // Initialize dashboard on page load
+        window.addEventListener('load', function() {
+            initializeDashboard();
+        });
+
+        function initializeDashboard() {
+            const container = document.getElementById('chartsContainer');
+            container.innerHTML = '';
+
+            // Create chart cards
+            Object.keys(chartConfigs).forEach(name => {
+                const config = chartConfigs[name];
+                const card = document.createElement('div');
+                card.className = 'chart-card';
+                card.innerHTML = `
+                    <div class="chart-title">${config.title}</div>
+                    <div class="chart-container" id="chart-${name}">
+                        <div class="loading">Loading chart...</div>
+                    </div>
+                    <div class="anomaly-status no-anomalies" id="status-${name}">
+                        Loading data...
+                    </div>
+                    <div class="stats">
+                        <div class="stat-item">
+                            <div class="stat-label">Data Points</div>
+                            <div class="stat-value" id="count-${name}">0</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-label">Anomalies Found</div>
+                            <div class="stat-value" id="anomalies-${name}">0</div>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            // Load and display charts
+            loadCharts();
+        }
+
+        function loadCharts() {
+            fetch('/api/get-streaming-data')
+                .then(response => response.json())
+                .then(data => {
+                    Object.keys(chartConfigs).forEach(name => {
+                        const config = chartConfigs[name];
+                        const chartData = data[name];
+                        
+                        if (chartData) {
+                            displayChart(name, config, chartData);
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Error loading data:', error);
+                    document.getElementById('chartsContainer').innerHTML += 
+                        '<p style="color: red;">Error loading chart data. Please refresh the page.</p>';
+                });
+        }
+
+        function displayChart(name, config, chartData) {
+            const values = chartData.values;
+            const anomalies = chartData.anomalies;
+
+            // Prepare normal data trace
+            const xValues = Array.from({length: values.length}, (_, i) => i);
+            
+            const traces = [
+                {
+                    x: xValues,
+                    y: values,
+                    mode: 'lines',
+                    name: 'Normal Data',
+                    line: {
+                        color: config.color,
+                        width: 2
+                    }
+                }
+            ];
+
+            // Add anomalies if they exist
+            if (anomalies.length > 0) {
+                const anomalyValues = anomalies.map(idx => values[idx]);
+                traces.push({
+                    x: anomalies,
+                    y: anomalyValues,
+                    mode: 'markers',
+                    name: 'Anomalies',
+                    marker: {
+                        color: '#EE5A6F',
+                        size: 10,
+                        symbol: 'x',
+                        line: {
+                            width: 2
+                        }
+                    }
+                });
+            }
+
+            // Layout
+            const layout = {
+                title: {
+                    text: `<b>${config.title}</b>`,
+                    x: 0.5,
+                    xanchor: 'center',
+                    font: {size: 14}
+                },
+                xaxis: {
+                    title: 'Time Index',
+                    showgrid: true,
+                    gridcolor: '#f0f0f0'
+                },
+                yaxis: {
+                    title: config.yaxis,
+                    showgrid: true,
+                    gridcolor: '#f0f0f0'
+                },
+                plot_bgcolor: '#F8F9FA',
+                paper_bgcolor: 'white',
+                showlegend: true,
+                hovermode: 'closest',
+                margin: {t: 40, b: 40, l: 60, r: 20}
+            };
+
+            // Plot chart
+            Plotly.newPlot(`chart-${name}`, traces, layout, {responsive: true});
+
+            // Update statistics
+            document.getElementById(`count-${name}`).textContent = values.length;
+            document.getElementById(`anomalies-${name}`).textContent = anomalies.length;
+
+            // Update status
+            const statusElement = document.getElementById(`status-${name}`);
+            if (anomalies.length > 0) {
+                const percentage = ((anomalies.length / values.length) * 100).toFixed(2);
+                statusElement.className = 'anomaly-status has-anomalies';
+                statusElement.innerHTML = `⚠️ Anomalies detected: ${anomalies.length} out of ${values.length} points (${percentage}%)`;
+            } else {
+                statusElement.className = 'anomaly-status no-anomalies';
+                statusElement.innerHTML = '✅ No anomalies detected - All data points are within normal range';
+            }
+        }
+
+        function refreshAllCharts() {
+            document.getElementById('chartsContainer').innerHTML = '<p class="loading">Refreshing data...</p>';
+            setTimeout(() => {
+                initializeDashboard();
+            }, 500);
+        }
+
+        // Smooth animation on chart update
+        function animateChartUpdate(chartName, newTraces) {
+            const layout = {
+                transition: {duration: 800},
+                xaxis: {transition: {duration: 800}},
+                yaxis: {transition: {duration: 800}}
+            };
+            Plotly.restyle(`chart-${chartName}`, 
+                {x: [newTraces[0].x], y: [newTraces[0].y]}, 0
+            );
+            if (newTraces.length > 1) {
+                Plotly.restyle(`chart-${chartName}`, 
+                    {x: [newTraces[1].x], y: [newTraces[1].y]}, 1
+                );
+            }
+        }
+
+        // Auto-refresh every 8 seconds with smooth animation
+        setInterval(function() {
+            console.log('Auto-updating charts with animation...');
+            fetch('/api/get-streaming-data')
+                .then(response => response.json())
+                .then(data => {
+                    Object.keys(chartConfigs).forEach(name => {
+                        const config = chartConfigs[name];
+                        const chartData = data[name];
+                        
+                        if (chartData) {
+                            const values = chartData.values;
+                            const anomalies = chartData.anomalies;
+                            const xValues = Array.from({length: values.length}, (_, i) => i);
+                            
+                            const newTraces = [
+                                {
+                                    x: xValues,
+                                    y: values,
+                                    mode: 'lines',
+                                    name: 'Normal Data',
+                                    line: {color: config.color, width: 2}
+                                }
+                            ];
+
+                            if (anomalies.length > 0) {
+                                const anomalyValues = anomalies.map(idx => values[idx]);
+                                newTraces.push({
+                                    x: anomalies,
+                                    y: anomalyValues,
+                                    mode: 'markers',
+                                    name: 'Anomalies',
+                                    marker: {
+                                        color: '#EE5A6F',
+                                        size: 10,
+                                        symbol: 'x',
+                                        line: {width: 2}
+                                    }
+                                });
+                            }
+
+                            animateChartUpdate(name, newTraces);
+
+                            // Update statistics with animation
+                            const countElement = document.getElementById(`count-${name}`);
+                            const anomaliesElement = document.getElementById(`anomalies-${name}`);
+                            
+                            countElement.style.transition = 'all 0.6s ease';
+                            anomaliesElement.style.transition = 'all 0.6s ease';
+                            countElement.textContent = values.length;
+                            anomaliesElement.textContent = anomalies.length;
+
+                            // Update status with animation
+                            const statusElement = document.getElementById(`status-${name}`);
+                            statusElement.style.transition = 'all 0.6s ease';
+                            if (anomalies.length > 0) {
+                                const percentage = ((anomalies.length / values.length) * 100).toFixed(2);
+                                statusElement.className = 'anomaly-status has-anomalies';
+                                statusElement.innerHTML = `⚠️ Anomalies detected: ${anomalies.length} out of ${values.length} points (${percentage}%)`;
+                            } else {
+                                statusElement.className = 'anomaly-status no-anomalies';
+                                statusElement.innerHTML = '✅ No anomalies detected - All data points are within normal range';
+                            }
+                        }
+                    });
+                })
+                .catch(error => console.error('Error updating charts:', error));
+        }, 8000);
+    </script>
+</body>
+</html>
