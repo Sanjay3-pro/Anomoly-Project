@@ -1,0 +1,122 @@
+2026-01-15 00:28:23,168 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.63.216.66:5000
+2026-01-15 00:28:23,169 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-01-15 00:28:23,171 - werkzeug - INFO -  * Restarting with stat
+2026-01-15 00:28:24,390 - werkzeug - WARNING -  * Debugger is active!
+2026-01-15 00:28:24,393 - werkzeug - INFO -  * Debugger PIN: 192-023-205
+2026-01-15 00:28:42,712 - __main__ - INFO - GET / - 127.0.0.1
+2026-01-15 00:28:42,722 - werkzeug - INFO - 127.0.0.1 - - [15/Jan/2026 00:28:42] "GET /?id=f4a39b73-14ea-4d2d-8f7f-5b38c2b5445b&vscodeBrowserReqId=1768417122402 HTTP/1.1" 200 -
+2026-01-15 00:28:47,984 - __main__ - INFO - GET / - 127.0.0.1
+2026-01-15 00:28:47,986 - werkzeug - INFO - 127.0.0.1 - - [15/Jan/2026 00:28:47] "GET / HTTP/1.1" 200 -
+2026-01-15 00:28:48,111 - __main__ - INFO - GET /favicon.ico - 127.0.0.1
+2026-01-15 00:28:48,112 - __main__ - WARNING - 404 error: /favicon.ico
+2026-01-15 00:28:48,113 - werkzeug - INFO - 127.0.0.1 - - [15/Jan/2026 00:28:48] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-01-15 00:28:51,047 - __main__ - INFO - GET /dashboard - 127.0.0.1
+2026-01-15 00:28:51,058 - werkzeug - INFO - 127.0.0.1 - - [15/Jan/2026 00:28:51] "GET /dashboard HTTP/1.1" 200 -
+2026-01-15 00:29:20,998 - __main__ - INFO - GET / - 127.0.0.1
+2026-01-15 00:29:20,999 - werkzeug - INFO - 127.0.0.1 - - [15/Jan/2026 00:29:20] "GET / HTTP/1.1" 200 -
+2026-01-15 00:31:11,296 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.63.216.66:5000
+2026-01-15 00:31:11,297 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-01-15 00:31:11,298 - werkzeug - INFO -  * Restarting with stat
+2026-01-15 00:31:12,484 - werkzeug - WARNING -  * Debugger is active!
+2026-01-15 00:31:12,486 - werkzeug - INFO -  * Debugger PIN: 192-023-205
+2026-01-15 00:31:22,857 - __main__ - INFO - GET / - 127.0.0.1
+2026-01-15 00:31:22,870 - werkzeug - INFO - 127.0.0.1 - - [15/Jan/2026 00:31:22] "GET / HTTP/1.1" 200 -
+2026-01-15 00:31:22,989 - __main__ - INFO - GET /favicon.ico - 127.0.0.1
+2026-01-15 00:31:22,990 - __main__ - WARNING - 404 error: /favicon.ico
+2026-01-15 00:31:22,991 - werkzeug - INFO - 127.0.0.1 - - [15/Jan/2026 00:31:22] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-01-15 00:31:26,065 - __main__ - INFO - GET / - 127.0.0.1
+2026-01-15 00:31:26,067 - werkzeug - INFO - 127.0.0.1 - - [15/Jan/2026 00:31:26] "GET / HTTP/1.1" 200 -
+2026-01-15 00:33:30,787 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.63.216.66:5000
+2026-01-15 00:33:30,788 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-01-15 00:33:30,790 - werkzeug - INFO -  * Restarting with stat
+2026-01-15 00:33:32,017 - werkzeug - WARNING -  * Debugger is active!
+2026-01-15 00:33:32,019 - werkzeug - INFO -  * Debugger PIN: 192-023-205
+2026-01-15 00:33:43,948 - __main__ - INFO - GET / - 127.0.0.1
+2026-01-15 00:33:43,972 - werkzeug - INFO - 127.0.0.1 - - [15/Jan/2026 00:33:43] "GET / HTTP/1.1" 200 -
+2026-01-15 00:33:45,321 - __main__ - INFO - GET / - 127.0.0.1
+2026-01-15 00:33:45,324 - werkzeug - INFO - 127.0.0.1 - - [15/Jan/2026 00:33:45] "GET / HTTP/1.1" 200 -
+2026-01-15 00:33:45,898 - __main__ - INFO - GET /favicon.ico - 127.0.0.1
+2026-01-15 00:33:45,899 - __main__ - WARNING - 404 error: /favicon.ico
+2026-01-15 00:33:45,900 - werkzeug - INFO - 127.0.0.1 - - [15/Jan/2026 00:33:45] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-01-15 00:33:48,691 - __main__ - INFO - GET / - 127.0.0.1
+2026-01-15 00:33:48,693 - werkzeug - INFO - 127.0.0.1 - - [15/Jan/2026 00:33:48] "GET / HTTP/1.1" 200 -
+2026-01-15 00:34:11,009 - __main__ - INFO - GET / - 127.0.0.1
+2026-01-15 00:34:11,010 - werkzeug - INFO - 127.0.0.1 - - [15/Jan/2026 00:34:11] "GET / HTTP/1.1" 200 -
+2026-01-15 00:34:11,153 - __main__ - INFO - GET /favicon.ico - 127.0.0.1
+2026-01-15 00:34:11,154 - __main__ - WARNING - 404 error: /favicon.ico
+2026-01-15 00:34:11,155 - werkzeug - INFO - 127.0.0.1 - - [15/Jan/2026 00:34:11] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-01-15 00:35:33,439 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.63.216.66:5000
+2026-01-15 00:35:33,439 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-01-15 00:35:33,441 - werkzeug - INFO -  * Restarting with stat
+2026-01-15 00:35:34,667 - werkzeug - WARNING -  * Debugger is active!
+2026-01-15 00:35:34,669 - werkzeug - INFO -  * Debugger PIN: 192-023-205
+2026-01-15 00:35:35,531 - __main__ - INFO - GET / - 127.0.0.1
+2026-01-15 00:35:35,539 - werkzeug - INFO - 127.0.0.1 - - [15/Jan/2026 00:35:35] "GET / HTTP/1.1" 200 -
+2026-01-15 00:35:35,687 - __main__ - INFO - GET /favicon.ico - 127.0.0.1
+2026-01-15 00:35:35,688 - __main__ - WARNING - 404 error: /favicon.ico
+2026-01-15 00:35:35,688 - werkzeug - INFO - 127.0.0.1 - - [15/Jan/2026 00:35:35] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-01-15 00:35:45,945 - __main__ - INFO - GET / - 127.0.0.1
+2026-01-15 00:35:45,946 - werkzeug - INFO - 127.0.0.1 - - [15/Jan/2026 00:35:45] "GET / HTTP/1.1" 200 -
+2026-01-15 00:35:46,065 - __main__ - INFO - GET /favicon.ico - 127.0.0.1
+2026-01-15 00:35:46,066 - __main__ - WARNING - 404 error: /favicon.ico
+2026-01-15 00:35:46,066 - werkzeug - INFO - 127.0.0.1 - - [15/Jan/2026 00:35:46] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-01-15 00:36:44,348 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.63.216.66:5000
+2026-01-15 00:36:44,348 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-01-15 00:36:44,349 - werkzeug - INFO -  * Restarting with stat
+2026-01-15 00:36:45,559 - werkzeug - WARNING -  * Debugger is active!
+2026-01-15 00:36:45,562 - werkzeug - INFO -  * Debugger PIN: 192-023-205
+2026-01-15 00:36:53,558 - __main__ - INFO - GET / - 127.0.0.1
+2026-01-15 00:36:53,581 - werkzeug - INFO - 127.0.0.1 - - [15/Jan/2026 00:36:53] "GET / HTTP/1.1" 200 -
+2026-01-15 00:37:09,004 - __main__ - INFO - GET / - 127.0.0.1
+2026-01-15 00:37:09,006 - werkzeug - INFO - 127.0.0.1 - - [15/Jan/2026 00:37:09] "GET / HTTP/1.1" 200 -
+2026-01-15 00:37:09,262 - __main__ - INFO - GET /favicon.ico - 127.0.0.1
+2026-01-15 00:37:09,263 - __main__ - WARNING - 404 error: /favicon.ico
+2026-01-15 00:37:09,263 - werkzeug - INFO - 127.0.0.1 - - [15/Jan/2026 00:37:09] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-01-15 00:37:11,310 - __main__ - INFO - GET / - 127.0.0.1
+2026-01-15 00:37:11,311 - werkzeug - INFO - 127.0.0.1 - - [15/Jan/2026 00:37:11] "GET / HTTP/1.1" 200 -
+2026-01-15 00:37:12,044 - __main__ - INFO - GET /favicon.ico - 127.0.0.1
+2026-01-15 00:37:12,044 - __main__ - WARNING - 404 error: /favicon.ico
+2026-01-15 00:37:12,045 - werkzeug - INFO - 127.0.0.1 - - [15/Jan/2026 00:37:12] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-01-15 00:37:13,078 - __main__ - INFO - GET / - 127.0.0.1
+2026-01-15 00:37:13,081 - werkzeug - INFO - 127.0.0.1 - - [15/Jan/2026 00:37:13] "GET / HTTP/1.1" 200 -
+2026-01-15 00:37:13,379 - __main__ - INFO - GET /favicon.ico - 127.0.0.1
+2026-01-15 00:37:13,380 - __main__ - WARNING - 404 error: /favicon.ico
+2026-01-15 00:37:13,380 - werkzeug - INFO - 127.0.0.1 - - [15/Jan/2026 00:37:13] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-01-15 00:37:14,257 - __main__ - INFO - GET / - 127.0.0.1
+2026-01-15 00:37:14,258 - werkzeug - INFO - 127.0.0.1 - - [15/Jan/2026 00:37:14] "GET / HTTP/1.1" 200 -
+2026-01-15 00:37:14,631 - __main__ - INFO - GET /favicon.ico - 127.0.0.1
+2026-01-15 00:37:14,634 - __main__ - WARNING - 404 error: /favicon.ico
+2026-01-15 00:37:14,635 - werkzeug - INFO - 127.0.0.1 - - [15/Jan/2026 00:37:14] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-01-15 00:37:28,630 - __main__ - INFO - GET / - 127.0.0.1
+2026-01-15 00:37:28,631 - werkzeug - INFO - 127.0.0.1 - - [15/Jan/2026 00:37:28] "GET / HTTP/1.1" 200 -
+2026-01-15 00:37:28,782 - __main__ - INFO - GET /favicon.ico - 127.0.0.1
+2026-01-15 00:37:28,783 - __main__ - WARNING - 404 error: /favicon.ico
+2026-01-15 00:37:28,783 - werkzeug - INFO - 127.0.0.1 - - [15/Jan/2026 00:37:28] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2026-01-15 00:39:05,215 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.63.216.66:5000
+2026-01-15 00:39:05,216 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-01-15 00:39:05,217 - werkzeug - INFO -  * Restarting with stat
+2026-01-15 00:39:06,418 - werkzeug - WARNING -  * Debugger is active!
+2026-01-15 00:39:06,420 - werkzeug - INFO -  * Debugger PIN: 192-023-205
+2026-01-15 00:39:20,090 - __main__ - INFO - GET / - 127.0.0.1
+2026-01-15 00:39:20,106 - werkzeug - INFO - 127.0.0.1 - - [15/Jan/2026 00:39:20] "GET / HTTP/1.1" 200 -
+2026-01-15 00:39:20,249 - __main__ - INFO - GET /favicon.ico - 127.0.0.1
+2026-01-15 00:39:20,250 - __main__ - WARNING - 404 error: /favicon.ico
+2026-01-15 00:39:20,250 - werkzeug - INFO - 127.0.0.1 - - [15/Jan/2026 00:39:20] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
