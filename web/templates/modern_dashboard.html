@@ -428,6 +428,182 @@
             font-weight: 600;
         }
 
+        /* History Section */
+        .history-section {
+            background: white;
+            border-radius: 15px;
+            margin: 30px 0;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+            animation: slideUp 0.6s ease-out;
+            overflow: hidden;
+        }
+
+        .history-header {
+            padding: 20px 25px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .history-header:hover {
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .history-panel {
+            max-height: 400px;
+            overflow-y: auto;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        .history-panel.hidden {
+            max-height: 0;
+            overflow: hidden;
+            animation: none;
+        }
+
+        .history-container {
+            padding: 20px;
+        }
+
+        .anomalies-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .anomaly-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #EE5A6F;
+            transition: all 0.3s ease;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .anomaly-item:hover {
+            background: white;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateX(5px);
+        }
+
+        .anomaly-dataset {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .anomaly-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .anomaly-time {
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+        }
+
+        .anomaly-value {
+            background: rgba(238, 90, 111, 0.15);
+            color: #EE5A6F;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+        }
+
+        /* Notifications */
+        .notifications-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            max-width: 400px;
+        }
+
+        .notification {
+            background: white;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            animation: slideInRight 0.3s ease-out;
+            border-left: 5px solid;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .notification.danger {
+            border-left-color: #EE5A6F;
+        }
+
+        .notification.success {
+            border-left-color: #28a745;
+        }
+
+        .notification.warning {
+            border-left-color: #ffc107;
+        }
+
+        .notification-icon {
+            font-size: 1.5em;
+        }
+
+        .notification-content {
+            flex: 1;
+        }
+
+        .notification-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 3px;
+        }
+
+        .notification-message {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .notification-close {
+            cursor: pointer;
+            font-size: 1.2em;
+            color: #999;
+            transition: color 0.3s;
+        }
+
+        .notification-close:hover {
+            color: #333;
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes slideOutRight {
+            from {
+                opacity: 1;
+                transform: translateX(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(30px);
+            }
+        }
+
         .timestamp {
             font-size: 0.8em;
             color: #999;
@@ -502,6 +678,24 @@
             </div>
         </div>
 
+        <!-- Anomaly History Section -->
+        <div class="history-section">
+            <div class="history-header" onclick="toggleHistoryPanel()">
+                <span style="font-size: 1.2em; font-weight: 600;">📋 Anomaly History</span>
+                <span id="history-toggle" style="font-size: 1.5em; transition: transform 0.3s;">▼</span>
+            </div>
+            <div id="historyPanel" class="history-panel">
+                <div class="history-container">
+                    <div id="anomalies-list" class="anomalies-list">
+                        <div style="text-align: center; color: #999; padding: 20px;">Loading anomalies...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Notifications Container -->
+        <div id="notifications-container" class="notifications-container"></div>
+
         <!-- Charts Grid -->
         <div class="charts-grid" id="chartsContainer">
             <!-- Charts will be loaded here -->
@@ -546,14 +740,36 @@
         };
 
         const chartInstances = {};
+        let previousAnomalyCount = {};
+        let cpuRealtimeMode = false; // Flag for CPU real-time mode
+
+        // API endpoints for real-time data
+        const realtimeEndpoints = {
+            'CPU Usage (Server Monitoring)': '/api/get-realtime-cpu',
+            'Financial Data': '/api/get-realtime-financial',
+            'Network Traffic (Packets/sec)': '/api/get-realtime-network',
+            'Temperature Sensor (°C)': '/api/get-realtime-temperature',
+            'Stock Price ($)': '/api/get-realtime-stock'
+        };
+
+        // Initialize previous anomaly counts
+        Object.keys(chartConfigs).forEach(name => {
+            previousAnomalyCount[name] = 0;
+        });
 
         // Initialize dashboard
         window.addEventListener('load', function() {
             updateDateTime();
             initializeDashboard();
-            updateDashboard();
-            // Update every 10 seconds
-            setInterval(updateDashboard, 10000);
+            updateAnomalyHistory();
+            
+            // Start real-time monitoring for all charts after 3 seconds
+            setTimeout(() => {
+                startRealtimeMonitoring();
+            }, 3000);
+            
+            // Update anomaly history every 5 seconds
+            setInterval(updateAnomalyHistory, 5000);
             // Update time every second
             setInterval(updateDateTime, 1000);
         });
@@ -586,6 +802,7 @@
 
                 // Create chart instance
                 const ctx = document.getElementById(chartId).getContext('2d');
+                
                 chartInstances[name] = new Chart(ctx, {
                     type: 'line',
                     data: {
@@ -595,16 +812,19 @@
                                 label: name,
                                 data: [],
                                 borderColor: config.color,
-                                backgroundColor: config.borderColor,
-                                borderWidth: 2.5,
-                                fill: true,
-                                tension: 0.4,
+                                backgroundColor: 'transparent',
+                                borderWidth: 2,
+                                fill: false,
+                                tension: 0.25,
                                 pointRadius: 3,
-                                pointHoverRadius: 7,
+                                pointHoverRadius: 6,
                                 pointBackgroundColor: config.color,
                                 pointBorderColor: 'white',
-                                pointBorderWidth: 1,
-                                clip: false
+                                pointBorderWidth: 1.5,
+                                clip: false,
+                                segment: {
+                                    borderDash: []
+                                }
                             },
                             {
                                 label: 'Anomalies',
@@ -613,12 +833,12 @@
                                 backgroundColor: 'transparent',
                                 borderWidth: 0,
                                 fill: false,
-                                pointRadius: 10,
-                                pointStyle: 'star',
+                                pointRadius: 5,
+                                pointStyle: 'circle',
                                 pointBackgroundColor: 'rgb(238, 90, 111)',
                                 pointBorderColor: 'white',
-                                pointBorderWidth: 2.5,
-                                pointHoverRadius: 13,
+                                pointBorderWidth: 2,
+                                pointHoverRadius: 8,
                                 showLine: false,
                                 clip: false
                             }
@@ -628,10 +848,10 @@
                         responsive: true,
                         maintainAspectRatio: false,
                         animation: {
-                            duration: 800,
-                            easing: 'easeInOutQuart',
+                            duration: 1200,
+                            easing: 'linear',
                             onProgress: function(animation) {
-                                // Smooth animation progress
+                                // Smooth continuous animation
                             },
                             onComplete: function(animation) {
                                 // Animation complete
@@ -639,11 +859,11 @@
                         },
                         interaction: {
                             intersect: false,
-                            mode: 'index'
+                            mode: 'nearest'
                         },
                         plugins: {
                             filler: {
-                                propagate: true
+                                propagate: false
                             },
                             legend: {
                                 display: true,
@@ -651,9 +871,9 @@
                                 labels: {
                                     usePointStyle: true,
                                     padding: 15,
-                                    font: {size: 12, weight: 'bold'},
-                                    boxWidth: 8,
-                                    boxHeight: 8,
+                                    font: {size: 11, weight: 'bold'},
+                                    boxWidth: 6,
+                                    boxHeight: 6,
                                     animation: {
                                         duration: 0
                                     }
@@ -661,32 +881,27 @@
                             },
                             tooltip: {
                                 enabled: true,
-                                mode: 'index',
+                                mode: 'nearest',
                                 intersect: false,
                                 backgroundColor: 'rgba(0, 0, 0, 0.95)',
-                                padding: 15,
-                                cornerRadius: 10,
-                                titleFont: {size: 13, weight: 'bold'},
-                                bodyFont: {size: 12},
-                                borderColor: 'rgba(102, 126, 234, 0.3)',
+                                padding: 12,
+                                cornerRadius: 8,
+                                titleFont: {size: 12, weight: 'bold'},
+                                bodyFont: {size: 11},
+                                borderColor: 'rgba(102, 126, 234, 0.4)',
                                 borderWidth: 1,
                                 animation: {
-                                    duration: 200
+                                    duration: 100
                                 },
                                 callbacks: {
                                     title: function(context) {
-                                        return `📊 Time Index: ${context[0].label}`;
+                                        return `📊 ${context[0].label}`;
                                     },
                                     label: function(context) {
                                         if (context.datasetIndex === 0) {
-                                            return `📈 ${name}: ${context.parsed.y.toFixed(2)}`;
+                                            return `Value: ${context.parsed.y.toFixed(2)}`;
                                         } else {
-                                            return '⚠️ ANOMALY DETECTED';
-                                        }
-                                    },
-                                    afterLabel: function(context) {
-                                        if (context.datasetIndex === 0) {
-                                            return 'Normal Data Point';
+                                            return '🔴 ANOMALY';
                                         }
                                     }
                                 }
@@ -696,7 +911,7 @@
                             y: {
                                 beginAtZero: false,
                                 grid: {
-                                    color: 'rgba(0, 0, 0, 0.05)',
+                                    color: 'rgba(0, 0, 0, 0.03)',
                                     drawBorder: false,
                                     animation: {
                                         duration: 0
@@ -747,64 +962,6 @@
             }, Math.max(stepTime, 50)); // Minimum 50ms per step for smooth animation
         }
 
-        function updateDashboard() {
-            fetch('/api/get-streaming-data')
-                .then(response => response.json())
-                .then(data => {
-                    // Update statistics
-                    const totalPoints = data.summary.total_points;
-                    const totalAnomalies = data.summary.total_anomalies;
-                    
-                    animateValue('total-points', parseInt(document.getElementById('total-points').textContent) || 0, totalPoints, 600);
-                    animateValue('total-anomalies', parseInt(document.getElementById('total-anomalies').textContent) || 0, totalAnomalies, 600);
-                    
-                    // Update rate smoothly
-                    document.getElementById('anomaly-rate').textContent = data.summary.anomaly_rate.toFixed(2) + '%';
-
-                    // Update timestamp
-                    const now = new Date();
-                    document.getElementById('lastUpdate').textContent = `Last update: ${now.toLocaleTimeString()}`;
-
-                    // Update all charts
-                    const chartNames = Object.keys(chartInstances);
-                    chartNames.forEach((name, index) => {
-                        const chartData = data[name];
-                        if (chartData && chartInstances[name]) {
-                            const values = chartData.values;
-                            const anomalies = chartData.anomalies;
-                            const xLabels = Array.from({length: values.length}, (_, i) => i);
-
-                            // Prepare normal data (show all points for visible line)
-                            const normalData = values.map((v, i) => v);
-
-                            // Prepare anomaly points - only anomaly coordinates
-                            const anomalyPoints = [];
-                            for (let i = 0; i < values.length; i++) {
-                                if (anomalies.includes(i)) {
-                                    anomalyPoints.push({x: i, y: values[i]});
-                                }
-                            }
-
-                            // Update chart data
-                            chartInstances[name].data.labels = xLabels;
-                            chartInstances[name].data.datasets[0].data = normalData;
-                            chartInstances[name].data.datasets[1].data = anomalyPoints;
-
-                            // Smooth update
-                            chartInstances[name].update({
-                                duration: 600,
-                                easing: 'easeInOutQuart'
-                            });
-
-                            // Update mini stats using simplified IDs
-                            document.getElementById(`points-${index}`).textContent = values.length;
-                            document.getElementById(`anomalies-${index}`).textContent = anomalies.length;
-                        }
-                    });
-                })
-                .catch(error => console.error('Error updating dashboard:', error));
-        }
-
         function updateDateTime() {
             const now = new Date();
             
@@ -834,6 +991,184 @@
                     clearInterval(timer);
                 }
             }, Math.max(stepTime, 50)); // Minimum 50ms per step for smooth animation
+        }
+
+        // Notification system
+        function showNotification(title, message, type = 'danger') {
+            const container = document.getElementById('notifications-container');
+            const notif = document.createElement('div');
+            notif.className = `notification ${type}`;
+            
+            const icons = {
+                'danger': '⚠️',
+                'success': '✅',
+                'warning': '⚡'
+            };
+            
+            notif.innerHTML = `
+                <div class="notification-icon">${icons[type]}</div>
+                <div class="notification-content">
+                    <div class="notification-title">${title}</div>
+                    <div class="notification-message">${message}</div>
+                </div>
+                <div class="notification-close" onclick="this.parentElement.remove()">✕</div>
+            `;
+            
+            container.appendChild(notif);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                notif.style.animation = 'slideOutRight 0.3s ease-in';
+                setTimeout(() => notif.remove(), 300);
+            }, 5000);
+        }
+
+        // Toggle history panel
+        function toggleHistoryPanel() {
+            const panel = document.getElementById('historyPanel');
+            const toggle = document.getElementById('history-toggle');
+            panel.classList.toggle('hidden');
+            toggle.style.transform = panel.classList.contains('hidden') ? 'rotate(-90deg)' : 'rotate(0)';
+        }
+
+        // Update anomaly history
+        function updateAnomalyHistory() {
+            fetch('/api/get-anomaly-history')
+                .then(response => response.json())
+                .then(data => {
+                    const anomaliesList = document.getElementById('anomalies-list');
+                    const allAnomalies = [];
+                    
+                    // Collect all anomalies with dataset info
+                    Object.entries(data.history).forEach(([dataset, anomalies]) => {
+                        anomalies.forEach(anomaly => {
+                            allAnomalies.push({
+                                dataset,
+                                ...anomaly
+                            });
+                        });
+                    });
+                    
+                    // Sort by timestamp (most recent first)
+                    allAnomalies.sort((a, b) => new Date(b.detected_at) - new Date(a.detected_at));
+                    
+                    // Display top 20 anomalies
+                    if (allAnomalies.length === 0) {
+                        anomaliesList.innerHTML = '<div style="text-align: center; color: #999; padding: 20px;">No anomalies detected yet</div>';
+                    } else {
+                        anomaliesList.innerHTML = allAnomalies.slice(0, 20).map(anomaly => {
+                            const time = new Date(anomaly.detected_at).toLocaleTimeString();
+                            return `
+                                <div class="anomaly-item">
+                                    <div class="anomaly-dataset">${anomaly.dataset}</div>
+                                    <div class="anomaly-details">
+                                        <span class="anomaly-time">${time}</span>
+                                        <span class="anomaly-value">Value: ${parseFloat(anomaly.value).toFixed(2)}</span>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('');
+                    }
+                })
+                .catch(error => console.error('Error updating history:', error));
+        }
+
+        // Play notification sound
+        function playNotificationSound() {
+            // Create a simple beep using Web Audio API
+            try {
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioContext.createOscillator();
+                const gain = audioContext.createGain();
+                
+                oscillator.connect(gain);
+                gain.connect(audioContext.destination);
+                
+                oscillator.frequency.value = 800;
+                oscillator.type = 'sine';
+                
+                gain.gain.setValueAtTime(0.3, audioContext.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + 0.5);
+            } catch (e) {
+                // Fallback if audio context not available
+                console.log('Audio context not available');
+            }
+        }
+
+        // Real-time monitoring for all charts with sliding window
+        function startRealtimeMonitoring() {
+            const chartNames = Object.keys(chartConfigs);
+            const maxDataPoints = 60;
+            
+            chartNames.forEach((chartName, chartIndex) => {
+                const endpoint = realtimeEndpoints[chartName];
+                
+                setInterval(() => {
+                    fetch(endpoint)
+                        .then(response => response.json())
+                        .then(data => {
+                            const chart = chartInstances[chartName];
+                            if (!chart) return;
+                            
+                            // Add new label (timestamp)
+                            chart.data.labels.push(data.timestamp);
+                            
+                            // Always add value to keep line continuous
+                            chart.data.datasets[0].data.push(data.value);
+                            
+                            // Add anomaly point if detected (overlaid on the line)
+                            if (data.is_anomaly) {
+                                chart.data.datasets[1].data.push({
+                                    x: chart.data.labels.length - 1,
+                                    y: data.value
+                                });
+                                
+                                // Show notification for anomaly
+                                showNotification(
+                                    `🚨 ${chartName}`,
+                                    `Anomaly detected: ${data.value.toFixed(2)}`,
+                                    'danger'
+                                );
+                                playNotificationSound();
+                            }
+                            
+                            // Remove old data points to maintain sliding window (50-60 points)
+                            if (chart.data.labels.length > maxDataPoints) {
+                                chart.data.labels.shift();
+                                chart.data.datasets[0].data.shift();
+                                
+                                // Shift anomaly dataset and update x positions
+                                chart.data.datasets[1].data.shift();
+                                chart.data.datasets[1].data = chart.data.datasets[1].data.map((point, idx) => {
+                                    if (point && point.x !== undefined) {
+                                        return { x: idx, y: point.y };
+                                    }
+                                    return point;
+                                });
+                            }
+                            
+                            // Update chart with smooth linear animation for continuous flow
+                            chart.update({
+                                duration: 1200,
+                                easing: 'linear',
+                                lazy: false,
+                                animation: {
+                                    animateScale: false,
+                                    animateRotate: false
+                                }
+                            });
+                            
+                            // Update stats
+                            document.getElementById(`points-${chartIndex}`).textContent = chart.data.labels.length;
+                            const anomalyCount = chart.data.datasets[1].data.filter(p => p && p.y !== undefined).length;
+                            document.getElementById(`anomalies-${chartIndex}`).textContent = anomalyCount;
+                        })
+                        .catch(error => console.error(`Error fetching real-time data for ${chartName}:`, error));
+                }, 2000); // Update every 2 seconds
+            });
         }
     </script>
 </body>
