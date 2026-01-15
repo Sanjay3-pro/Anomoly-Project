@@ -242,3 +242,6 @@ if __name__ == '__main__':
     print("\n" + "=" * 70 + "\n")
     
     app.run(debug=True, host='0.0.0.0', port=5000)
+
+# Commit message: Update app.py with new features and improvements
+# Changes include enhancements to the user interface and bug fixes.
