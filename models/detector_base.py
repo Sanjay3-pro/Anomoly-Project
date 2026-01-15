@@ -90,3 +90,13 @@ class AnomalyDetector(ABC):
             threshold: New threshold value
         """
         self.threshold = threshold
+    
+    def _check_fitted(self) -> None:
+        """
+        Check if the detector has been fitted
+        
+        Raises:
+            ValueError: If detector is not fitted
+        """
+        if not self.is_fitted:
+            raise ValueError(f"{self.name} must be fitted before prediction")

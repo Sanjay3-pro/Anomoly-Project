@@ -301,6 +301,152 @@
             color: #666;
         }
         
+        /* Anomaly History Feed Styles */
+        .anomaly-feed {
+            grid-column: 1 / -1;
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        body.dark-mode .anomaly-feed {
+            background: var(--dark-card);
+        }
+        
+        .anomaly-feed h2 {
+            color: var(--text-dark);
+            margin-bottom: 20px;
+            font-size: 1.4em;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 10px;
+        }
+        
+        body.dark-mode .anomaly-feed h2 {
+            color: var(--text-light);
+        }
+        
+        .anomaly-history {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .anomaly-history::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .anomaly-history::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        body.dark-mode .anomaly-history::-webkit-scrollbar-track {
+            background: #222;
+        }
+        
+        .anomaly-history::-webkit-scrollbar-thumb {
+            background: var(--primary-color);
+            border-radius: 4px;
+        }
+        
+        .anomaly-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+            transition: all 0.3s;
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        body.dark-mode .anomaly-item {
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .anomaly-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .anomaly-item.cpu {
+            border-left-color: #667eea;
+        }
+        
+        .anomaly-item.network {
+            border-left-color: #764ba2;
+        }
+        
+        .anomaly-item.sensor {
+            border-left-color: #28a745;
+        }
+        
+        .anomaly-item.financial {
+            border-left-color: #ffc107;
+        }
+        
+        .anomaly-item.critical {
+            border-left-color: var(--danger-color);
+        }
+        
+        .anomaly-info {
+            flex: 1;
+        }
+        
+        .anomaly-title {
+            font-weight: 700;
+            font-size: 1.05em;
+            color: var(--text-dark);
+            margin-bottom: 5px;
+        }
+        
+        body.dark-mode .anomaly-title {
+            color: var(--text-light);
+        }
+        
+        .anomaly-time {
+            font-size: 0.85em;
+            color: #666;
+        }
+        
+        body.dark-mode .anomaly-time {
+            color: #aaa;
+        }
+        
+        .anomaly-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: var(--primary-color);
+            color: white;
+            font-weight: 600;
+            font-size: 0.95em;
+            white-space: nowrap;
+        }
+        
+        .anomaly-badge.warning {
+            background: var(--warning-color);
+            color: #333;
+        }
+        
+        .anomaly-badge.danger {
+            background: var(--danger-color);
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
         @media (max-width: 768px) {
             .dashboard {
                 grid-template-columns: 1fr;
@@ -492,13 +638,16 @@
             </div>
         </div>
         
-        <!-- Recent Alerts Card -->
-        <div class="card">
-            <h2>🚨 Recent Alerts</h2>
-            <div id="alertsList">
-                <div class="metric">
-                    <span class="metric-label">⚠️ Initializing...</span>
-                    <span class="metric-value">now</span>
+        <!-- Unified Anomaly History Feed -->
+        <div class="anomaly-feed">
+            <h2>📜 Anomaly History</h2>
+            <div class="anomaly-history" id="anomalyHistory">
+                <div class="anomaly-item cpu">
+                    <div class="anomaly-info">
+                        <div class="anomaly-title">💻 CPU Usage</div>
+                        <div class="anomaly-time">Initializing...</div>
+                    </div>
+                    <div class="anomaly-badge">--</div>
                 </div>
             </div>
         </div>
@@ -583,8 +732,92 @@
             document.getElementById('detectionRate').textContent = getRandomFloat(5, 12) + '%';
             document.getElementById('criticalAlerts').textContent = getRandomData(0, 3);
             
+            // Update anomaly history feed
+            updateAnomalyHistory();
+            
             // Update trends chart
             updateTrendsChart();
+        }
+        
+        // Anomaly history data
+        let anomalyHistory = [];
+        const MAX_HISTORY = 20;
+        
+        // Update unified anomaly history feed
+        function updateAnomalyHistory() {
+            // Generate new anomalies randomly
+            if (Math.random() > 0.3) { // 70% chance to add new anomaly each update
+                const types = [
+                    { type: 'cpu', icon: '💻', name: 'CPU Usage', unit: '%', min: 85, max: 100 },
+                    { type: 'network', icon: '🌐', name: 'Network Traffic', unit: ' Mbps', min: 500, max: 900 },
+                    { type: 'sensor', icon: '🌡️', name: 'Temperature', unit: '°C', min: 32, max: 45 },
+                    { type: 'financial', icon: '📈', name: 'Stock Price', unit: '', min: 10, max: 50, prefix: '$' }
+                ];
+                
+                const selectedType = types[Math.floor(Math.random() * types.length)];
+                const value = getRandomFloat(selectedType.min, selectedType.max);
+                const severity = value > (selectedType.max - selectedType.min) * 0.7 + selectedType.min ? 'danger' : 'warning';
+                
+                const newAnomaly = {
+                    type: selectedType.type,
+                    icon: selectedType.icon,
+                    name: selectedType.name,
+                    value: (selectedType.prefix || '') + value + selectedType.unit,
+                    time: new Date(),
+                    severity: severity
+                };
+                
+                anomalyHistory.unshift(newAnomaly);
+                
+                // Keep only latest entries
+                if (anomalyHistory.length > MAX_HISTORY) {
+                    anomalyHistory = anomalyHistory.slice(0, MAX_HISTORY);
+                }
+            }
+            
+            // Render anomaly history
+            renderAnomalyHistory();
+        }
+        
+        function renderAnomalyHistory() {
+            const container = document.getElementById('anomalyHistory');
+            
+            if (anomalyHistory.length === 0) {
+                container.innerHTML = `
+                    <div class="anomaly-item">
+                        <div class="anomaly-info">
+                            <div class="anomaly-title">No anomalies detected</div>
+                            <div class="anomaly-time">System monitoring active</div>
+                        </div>
+                        <div class="anomaly-badge">✓ Normal</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = anomalyHistory.map(anomaly => {
+                const timeAgo = getTimeAgo(anomaly.time);
+                return `
+                    <div class="anomaly-item ${anomaly.type} ${anomaly.severity}">
+                        <div class="anomaly-info">
+                            <div class="anomaly-title">${anomaly.icon} ${anomaly.name}</div>
+                            <div class="anomaly-time">${timeAgo}</div>
+                        </div>
+                        <div class="anomaly-badge ${anomaly.severity}">${anomaly.value}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        function getTimeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            
+            if (seconds < 60) return 'Just now';
+            if (seconds < 120) return '1 minute ago';
+            if (seconds < 3600) return Math.floor(seconds / 60) + ' minutes ago';
+            if (seconds < 7200) return '1 hour ago';
+            if (seconds < 86400) return Math.floor(seconds / 3600) + ' hours ago';
+            return Math.floor(seconds / 86400) + ' days ago';
         }
         
         // Update trends chart

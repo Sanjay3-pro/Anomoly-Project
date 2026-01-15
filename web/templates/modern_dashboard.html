@@ -757,11 +757,34 @@
             previousAnomalyCount[name] = 0;
         });
 
+        // Update global statistics
+        function updateGlobalStats() {
+            let totalPoints = 0;
+            let totalAnomalies = 0;
+            
+            Object.keys(chartInstances).forEach(chartName => {
+                const chart = chartInstances[chartName];
+                if (chart) {
+                    totalPoints += chart.data.labels.length;
+                    const anomalyCount = chart.data.datasets[1].data.filter(p => p && p.y !== undefined).length;
+                    totalAnomalies += anomalyCount;
+                }
+            });
+            
+            // Update the stat cards
+            document.getElementById('total-points').textContent = totalPoints;
+            document.getElementById('total-anomalies').textContent = totalAnomalies;
+            
+            const anomalyRate = totalPoints > 0 ? ((totalAnomalies / totalPoints) * 100).toFixed(1) : 0;
+            document.getElementById('anomaly-rate').textContent = anomalyRate + '%';
+        }
+
         // Initialize dashboard
         window.addEventListener('load', function() {
             updateDateTime();
             initializeDashboard();
             updateAnomalyHistory();
+            updateGlobalStats(); // Initial stats update
             
             // Start real-time monitoring for all charts after 3 seconds
             setTimeout(() => {
@@ -770,6 +793,8 @@
             
             // Update anomaly history every 5 seconds
             setInterval(updateAnomalyHistory, 5000);
+            // Update global stats every 2 seconds
+            setInterval(updateGlobalStats, 2000);
             // Update time every second
             setInterval(updateDateTime, 1000);
         });

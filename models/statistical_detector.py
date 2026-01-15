@@ -7,12 +7,12 @@ from .detector_base import AnomalyDetector
 class StatisticalDetector(AnomalyDetector):
     """Detects anomalies using statistical methods (Z-score, IQR, Moving Average)"""
     
-    def __init__(self, threshold: float = 2.5, method: str = "zscore", window: int = 10):
+    def __init__(self, threshold: float = 3.0, method: str = "zscore", window: int = 10):
         """
         Initialize statistical detector
         
         Args:
-            threshold: Z-score threshold (default 2.5 ≈ 98.8% confidence)
+            threshold: Z-score threshold (default 3.0 ≈ 99.7% confidence for higher accuracy)
             method: "zscore", "iqr", or "moving_average"
             window: Window size for moving average (if applicable)
         """
@@ -21,27 +21,41 @@ class StatisticalDetector(AnomalyDetector):
         self.window = window
         self.mean = None
         self.std = None
+        self.median = None
+        self.mad = None  # Median Absolute Deviation - more robust
         self.Q1 = None
         self.Q3 = None
+        self.IQR = None
     
     def fit(self, data: np.ndarray) -> None:
         """
-        Learn statistics from normal data
+        Learn statistics from normal data using robust methods
         
         Args:
             data: Training data
         """
         self.mean = np.mean(data)
         self.std = np.std(data)
+        self.median = np.median(data)
+        
+        # Median Absolute Deviation - more robust to outliers
+        self.mad = np.median(np.abs(data - self.median))
+        
+        # IQR method
         self.Q1 = np.percentile(data, 25)
         self.Q3 = np.percentile(data, 75)
+        self.IQR = self.Q3 - self.Q1
+        
         self.is_fitted = True
         
         self.metadata = {
             "mean": float(self.mean),
             "std": float(self.std),
+            "median": float(self.median),
+            "mad": float(self.mad),
             "Q1": float(self.Q1),
             "Q3": float(self.Q3),
+            "IQR": float(self.IQR),
             "method": self.method
         }
     

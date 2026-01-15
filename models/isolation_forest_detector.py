@@ -22,7 +22,11 @@ class IsolationForestDetector(AnomalyDetector):
         self.model = IsolationForest(
             contamination=contamination,
             random_state=random_state,
-            n_estimators=100
+            n_estimators=200,  # Increased for better accuracy
+            max_samples='auto',
+            max_features=1.0,
+            bootstrap=True,  # Use bootstrap sampling
+            warm_start=False
         )
         self.threshold = 0  # Isolation Forest uses anomaly scores
     

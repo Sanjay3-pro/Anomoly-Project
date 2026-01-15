@@ -22,7 +22,11 @@ class LOFDetector(AnomalyDetector):
         self.model = LocalOutlierFactor(
             n_neighbors=n_neighbors,
             contamination=contamination,
-            novelty=True
+            novelty=True,
+            metric='minkowski',  # Better distance metric
+            p=2,  # Euclidean distance
+            algorithm='auto',  # Let sklearn choose best algorithm
+            leaf_size=30
         )
         self.threshold = 0
     

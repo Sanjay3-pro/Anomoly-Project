@@ -19,7 +19,7 @@ import time
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from utils.data_processor import TimeSeriesProcessor
-from models import StatisticalDetector
+from models import StatisticalDetector, IsolationForestDetector, LOFDetector, EnsembleDetector
 from data.generate_data import (
     generate_cpu_usage_data, 
     generate_financial_data, 
@@ -77,7 +77,10 @@ def index():
     
     # Store initial data globally for streaming
     processor = TimeSeriesProcessor()
-    detector = StatisticalDetector(threshold=2.5)
+    # Use ensemble detector for improved accuracy
+    detector = EnsembleDetector(
+        voting='weighted'  # Weighted voting for more nuanced detection
+    )
     
     for name, df in datasets.items():
         numeric_cols = df.select_dtypes(include=[np.number]).columns
