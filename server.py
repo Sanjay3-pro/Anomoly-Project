@@ -298,21 +298,8 @@ def auto_fetch_and_process():
 
 @app.route('/', methods=['GET'])
 def index():
-    """Home endpoint"""
-    return jsonify({
-        'service': 'Anomaly Detection Server',
-        'status': 'RUNNING',
-        'endpoints': {
-            'status': 'GET /api/status',
-            'stats': 'GET /api/stats',
-            'data': 'GET /api/data/<source>',
-            'alerts': 'GET /api/alerts',
-            'recent_anomalies': 'GET /api/anomalies',
-            'stream_anomalies': 'GET /api/stream/anomalies',
-            'submit_data': 'POST /api/submit',
-            'configure': 'POST /api/configure'
-        }
-    })
+    """Home endpoint - serve dashboard HTML"""
+    return dashboard()
 
 @app.route('/api/stream/anomalies', methods=['GET'])
 def stream_anomalies():
