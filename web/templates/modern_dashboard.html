@@ -791,10 +791,10 @@
                 startRealtimeMonitoring();
             }, 3000);
             
-            // Update anomaly history every 5 seconds
-            setInterval(updateAnomalyHistory, 5000);
-            // Update global stats every 2 seconds
-            setInterval(updateGlobalStats, 2000);
+            // Update anomaly history every 3 seconds
+            setInterval(updateAnomalyHistory, 3000);
+            // Update global stats every 3 seconds
+            setInterval(updateGlobalStats, 3000);
             // Update time every second
             setInterval(updateDateTime, 1000);
         });
@@ -1192,7 +1192,7 @@
                             document.getElementById(`anomalies-${chartIndex}`).textContent = anomalyCount;
                         })
                         .catch(error => console.error(`Error fetching real-time data for ${chartName}:`, error));
-                }, 2000); // Update every 2 seconds
+                }, 3000); // Update every 3 seconds
             });
         }
     </script>
