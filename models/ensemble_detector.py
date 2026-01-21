@@ -28,9 +28,9 @@ class EnsembleDetector(AnomalyDetector):
         
         # Initialize multiple detectors with optimized parameters
         self.detectors = [
-            StatisticalDetector(threshold=3.0, method="zscore"),
-            IsolationForestDetector(contamination=0.05),
-            LOFDetector(n_neighbors=20, contamination=0.05)
+            StatisticalDetector(threshold=4.0, method="zscore"),
+            IsolationForestDetector(contamination=0.02),
+            LOFDetector(n_neighbors=20, contamination=0.02)
         ]
         
         if self.weights is None:
